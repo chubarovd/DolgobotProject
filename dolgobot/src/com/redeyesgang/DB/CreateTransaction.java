@@ -9,10 +9,12 @@ public class CreateTransaction implements ICreateTransaction, IGetTotal,IValidat
     final private Connection _conn;
     final private Properties _props;
 
+
     public CreateTransaction(Connection conn, Properties props) {
         _conn = conn;
         _props = props;
     }
+
 
     @Override
     public int addTransaction(Transaction trans) throws SQLException {
@@ -21,7 +23,7 @@ public class CreateTransaction implements ICreateTransaction, IGetTotal,IValidat
         ps.setInt(2, trans.getToId());
         ps.setInt(3,trans.getAmount());
         ps.setString(4,trans.getDescription());
-        Date dt = new Date(System.currentTimeMillis();
+        Date dt = new Date(System.currentTimeMillis());
         ps.setDate(5, dt);
         ps.executeUpdate();
         ps.close();
@@ -39,6 +41,7 @@ public class CreateTransaction implements ICreateTransaction, IGetTotal,IValidat
         return result;
     }
 
+
     @Override
     public Map<Integer, Integer> getTotal(int userID) throws SQLException {
         Map<Integer,Integer> result = new HashMap<>();
@@ -52,6 +55,7 @@ public class CreateTransaction implements ICreateTransaction, IGetTotal,IValidat
         ps.close();
         return result;
     }
+
 
     @Override
     public void validate(int transactID) throws SQLException, TransactionException {
@@ -74,6 +78,8 @@ public class CreateTransaction implements ICreateTransaction, IGetTotal,IValidat
         ps.close();
         updateTotal(from,to,amount);
     }
+
+
     private void updateTotal(int from, int to, int amount) throws SQLException {
         PreparedStatement ps = _conn.prepareStatement(_props.getProperty("getTotal"));
         ps.setInt(1,from);
