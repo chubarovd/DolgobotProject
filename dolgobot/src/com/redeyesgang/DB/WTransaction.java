@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
-public class WTransaction implements ICreateTransaction, IGetTotal,IValidateTransaction{
+public class WTransaction implements ITransaction, IGetTotal{
     final private Connection _conn;
     final private Properties _props;
 

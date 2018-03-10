@@ -13,4 +13,8 @@ public class QueryBuilderForGroup {
     public static String getDeleteGroupQuery(String groupName) {
         return "DROP TABLE " + groupName;
     }
+
+    public static String getInsertToGroupQuery(String groupName) {
+        return "INSERT INTO "+groupName+" member VALUES (?)";
+    }
 }

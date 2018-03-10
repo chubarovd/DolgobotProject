@@ -13,3 +13,17 @@ createTotal = INSERT INTO total (fromID, toId, amount) VALUES (?,?,?)
 updateTotal = UPDATE total SET total=? WHERE fromID=? AND toID=?
 
 getTotalByID = SELECT toID,total FROM total WHERE fromID=?
+
+createUserWithSN = INSERT INTO users (telegramID, firstName, secondName, login) VALUES (?,?,?,?)
+
+createUser = INSERT INTO users (telegramID, firstName,login) VALUES (?,?,?)
+
+getUser = SELECT telegramID FROM users WHERE login=?
+
+getGroupID = SELECT groupID FROM groups WHERE groupName=?
+
+createGroup = INSERT INTO groups (groupName,adminID) VALUES (?,?)
+
+getAdmin = SELECT adminID FROM groups WHERE groupName=?
+
+insertUiG = INSERT INTO UserInGroups (userID, groupID) VALUES (?,?)
