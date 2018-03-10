@@ -6,7 +6,7 @@ CREATE TABLE users (
 );
 
 CREATE TABLE transact (
-   transactID  SERIAL PRIMARY KEY
+   transactID  BIGSERIAL PRIMARY KEY
   ,fromID      INT REFERENCES users(telegramID)
   ,toID        INT REFERENCES users(telegramID)
   ,amount      INT NOT NULL CHECK (amount > 0)
@@ -26,6 +26,12 @@ CREATE TABLE Groups(
    groupID     SERIAL PRIMARY KEY
   ,groupName   VARCHAR(30) NOT NULL UNIQUE
   ,adminID     INT REFERENCES users(telegramID)
+);
+
+CREATE TABLE UserInGroups(
+   userID      INT REFERENCES users(telegramID)
+  ,groupID     INT REFERENCES Groups(groupID)
+  ,UNIQUE (userID,groupID)
 );
 
 CREATE INDEX findTransact ON transact (fromID, toID);
