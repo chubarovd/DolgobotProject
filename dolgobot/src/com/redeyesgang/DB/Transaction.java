@@ -22,6 +22,18 @@ public class Transaction {
     public String getDescription () {
         return description;
     }
+    public Transaction setFromId (int fromId) {
+        this.fromId = fromId;
+        return this;
+    }
+    public Transaction setToId (int toId) {
+        this.toId = toId;
+        return this;
+    }
+    public Transaction setAmount (int amount) {
+        this.amount = amount;
+        return this;
+    }
 
     public Transaction (int fromId, int toId, int amount) throws TransactionException {
         if (fromId == toId) {

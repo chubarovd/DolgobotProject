@@ -1,0 +1,15 @@
+createTransaction = INSERT INTO transact (fromID, toID, amount, description, data) VALUES (?,?,?,?,?)
+
+getTransactionID = SELECT transactID WHERE fromID=? AND  toID=? AND data=?
+
+validate = UPDATE transact SET isLegal='1' WHERE transactID=?
+
+getTransactInfo = SELECT fromID,toID,amount FROM transact WHERE transactID=?
+
+getTotal = SELECT total FROM total WHERE fromID=? AND toID=?
+
+createTotal = INSERT INTO total (fromID, toId, amount) VALUES (?,?,?)
+
+updateTotal = UPDATE total SET total=? WHERE fromID=? AND toID=?
+
+getTotalByID = SELECT toID,total FROM total WHERE fromID=?
