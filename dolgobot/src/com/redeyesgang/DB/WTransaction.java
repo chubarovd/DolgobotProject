@@ -5,12 +5,12 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
-public class CreateTransaction implements ICreateTransaction, IGetTotal,IValidateTransaction{
+public class WTransaction implements ITransaction, IGetTotal{
     final private Connection _conn;
     final private Properties _props;
 
 
-    public CreateTransaction(Connection conn, Properties props) {
+    public WTransaction(Connection conn, Properties props) {
         _conn = conn;
         _props = props;
     }
