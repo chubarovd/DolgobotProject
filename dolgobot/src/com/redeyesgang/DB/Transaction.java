@@ -8,7 +8,8 @@ public class Transaction {
     private int fromId;
     private int toId;
     private int amount;
-    private String description;
+    private int transactID=-1;
+    private String description=null;
 
     public int getFromId () {
         return fromId;
@@ -36,5 +37,13 @@ public class Transaction {
             throw new TransactionException (
                 "Invalid amount. It should be positive integer number.");
         }
+    }
+
+    public int getTransactID() {
+        return transactID;
+    }
+
+    public void setTransactID(int transactID) {
+        this.transactID = transactID;
     }
 }
