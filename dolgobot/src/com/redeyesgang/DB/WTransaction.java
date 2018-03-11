@@ -88,7 +88,7 @@ public class WTransaction implements ITransaction {
     }
 
     @Override
-    public List<Transaction> addTransactionToGroup(int telegramID, String groupName, int amount, String desc) throws SQLException, TransactionException {
+    public List<Transaction> addTransactionToGroup(long telegramID, String groupName, int amount, String desc) throws SQLException, TransactionException {
         PreparedStatement ps = _conn.prepareStatement(_props.getProperty("getGroupID"));
         ps.setString(1,groupName);
         ResultSet rs = ps.executeQuery();
@@ -126,6 +126,11 @@ public class WTransaction implements ITransaction {
         return res;
 
 
+    }
+
+    @Override
+    public List<Transaction> getTransactions(long telegramID) {
+     //pass
     }
 
 

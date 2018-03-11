@@ -12,7 +12,7 @@ public class WorkWithUsers implements IWorkWithUsers {
     }
 
     @Override
-    public void createUser(int telegramUid,long telegramChatUid, String firstName, String dolgobotLogin, String lastName) throws SQLException, OnCreateException {
+    public void createUser(long telegramUid,long telegramChatUid, String firstName, String dolgobotLogin, String lastName) throws SQLException, OnCreateException {
         PreparedStatement ps;
         if (lastName == null) {
             ps = _con.prepareStatement(_props.getProperty("getUser"));
@@ -178,7 +178,7 @@ public class WorkWithUsers implements IWorkWithUsers {
     }
 
     @Override
-    public long getChatIDbyTgUID(int telegramID) throws SQLException, OnCreateException {
+    public long getChatIDbyTgUID(long telegramID) throws SQLException, OnCreateException {
         PreparedStatement ps = _con.prepareStatement(_props.getProperty("getChatIDbyTgUID"));
         ps.setLong(1,telegramID);
         ResultSet rs = ps.executeQuery();
@@ -196,7 +196,7 @@ public class WorkWithUsers implements IWorkWithUsers {
     }
 
     @Override
-    public String getLoginByTelegramID(int telegramID) throws SQLException, OnCreateException {
+    public String getLoginByTelegramID(long telegramID) throws SQLException, OnCreateException {
         PreparedStatement ps = _con.prepareStatement(_props.getProperty("getLoginByUID"));
         ps.setLong(1,telegramID);
         ResultSet rs = ps.executeQuery();
@@ -214,7 +214,7 @@ public class WorkWithUsers implements IWorkWithUsers {
     }
 
     @Override
-    public void updateChatID(int telegramUID, long telegramChatID) throws SQLException {
+    public void updateChatID(long telegramUID, long telegramChatID) throws SQLException {
         PreparedStatement ps = _con.prepareStatement(_props.getProperty("updateChatID"));
         ps.setLong(1,telegramChatID);
         ps.setLong(2,telegramUID);

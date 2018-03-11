@@ -33,12 +33,17 @@ public class DBWorker implements IGetInfo,ITransaction,IWorkWithUsers {
     }
 
     @Override
-    public List<Transaction> addTransactionToGroup(int telegramID, String groupName, int amount, String desc) throws SQLException, TransactionException {
+    public List<Transaction> addTransactionToGroup(long telegramID, String groupName, int amount, String desc) throws SQLException, TransactionException {
         return null;
     }
 
     @Override
-    public void createUser(int telegramUID, long telegramChatUid, String firstName, String dolgobotLogin, String lastName) throws SQLException, OnCreateException {
+    public List<Transaction> getTransactions(long telegramID) {
+        return null;
+    }
+
+    @Override
+    public void createUser(long telegramUID, long telegramChatUid, String firstName, String dolgobotLogin, String lastName) throws SQLException, OnCreateException {
 
     }
 
@@ -68,17 +73,17 @@ public class DBWorker implements IGetInfo,ITransaction,IWorkWithUsers {
     }
 
     @Override
-    public long getChatIDbyTgUID(int telegramID) throws SQLException, OnCreateException {
+    public long getChatIDbyTgUID(long telegramID) throws SQLException, OnCreateException {
         return 0;
     }
 
     @Override
-    public String getLoginByTelegramID(int telegramID) throws SQLException, OnCreateException {
+    public String getLoginByTelegramID(long telegramID) throws SQLException, OnCreateException {
         return null;
     }
 
     @Override
-    public void updateChatID(int telegramUID, long telegramChatID) throws SQLException {
+    public void updateChatID(long telegramUID, long telegramChatID) throws SQLException {
 
     }
 
