@@ -12,27 +12,26 @@ public class WorkWithUsers implements IWorkWithUsers {
     }
 
     @Override
-    public void createUser(long telegramUid, String firstName, String dolgobotLogin) throws SQLException, OnCreateException {
-        PreparedStatement ps = _con.prepareStatement(_props.getProperty("getUser"));
-        ps.setString(1,dolgobotLogin);
-        ResultSet rs = ps.executeQuery();
-        if (rs.next()) {
+    public void createUser(long telegramUid, String firstName, String dolgobotLogin, String lastName) throws SQLException, OnCreateException {
+        if (lastName == null) {
+            PreparedStatement ps = _con.prepareStatement(_props.getProperty("getUser"));
+            ps.setString(1,dolgobotLogin);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                rs.close();
+                ps.close();
+                throw new OnCreateException("Пользователь с таким логином сущесвует!");
+            }
             rs.close();
             ps.close();
-            throw new OnCreateException("Пользователь с таким логином сущесвует!");
+            ps = _con.prepareStatement(_props.getProperty("createUser"));
+            ps.setLong(1,telegramUid);
+            ps.setString(2,firstName);
+            ps.setString(3,dolgobotLogin);
+            ps.executeUpdate();
+            ps.close();
+            return;
         }
-        rs.close();
-        ps.close();
-        ps = _con.prepareStatement(_props.getProperty("createUser"));
-        ps.setLong(1,telegramUid);
-        ps.setString(2,firstName);
-        ps.setString(3,dolgobotLogin);
-        ps.executeUpdate();
-        ps.close();
-    }
-
-    @Override
-    public void createUser(long telegramUid, String firstName, String dolgobotLogin, String lastName) throws SQLException, OnCreateException {
         PreparedStatement ps = _con.prepareStatement(_props.getProperty("getUser"));
         ps.setString(1,dolgobotLogin);
         ResultSet rs = ps.executeQuery();

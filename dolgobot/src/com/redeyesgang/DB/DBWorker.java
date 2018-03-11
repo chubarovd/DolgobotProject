@@ -31,11 +31,6 @@ public class DBWorker implements IGetInfo,ITransaction,IWorkWithUsers {
     }
 
     @Override
-    public void createUser(long telegramUid, String firstName, String dolgobotLogin) throws SQLException, OnCreateException {
-
-    }
-
-    @Override
     public void createUser(long telegramUid, String firstName, String dolgobotLogin, String lastName) throws SQLException, OnCreateException {
 
     }
