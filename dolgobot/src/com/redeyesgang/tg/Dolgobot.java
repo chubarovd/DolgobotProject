@@ -21,7 +21,7 @@ import java.util.*;
  */
 public class Dolgobot extends TelegramLongPollingBot {
     private Properties props;
-    private Map <Integer, User> users;
+    private Map <Long, User> users;
 
     public Dolgobot () {
         super ();
@@ -73,7 +73,7 @@ public class Dolgobot extends TelegramLongPollingBot {
     private void textProcessing (Update update) {
         Message in = update.getMessage ();
         String in_text = in.getText ();
-        int userId = in.getFrom ().getId ();
+        long userId = in.getChatId ();
         User temp = users.get (userId);
         if (temp == null) {
             switch (in_text) {
@@ -147,7 +147,11 @@ public class Dolgobot extends TelegramLongPollingBot {
                     } else {
                         temp.getTransaction ().setAmount (amount);
                         //send trnsction to dtbse
+                        users.remove (userId);
                     }
+                    break;
+                case SENDS_DESCRIPTION:
+
                     break;
             }
         }

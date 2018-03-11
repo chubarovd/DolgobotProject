@@ -10,7 +10,8 @@ public class User {
     public enum State {
         SENDS_LOGIN,
         SENDS_DEST_USER,
-        SENDS_AMOUNT
+        SENDS_AMOUNT,
+        SENDS_DESCRIPTION
     }
 
     //private int userId;
