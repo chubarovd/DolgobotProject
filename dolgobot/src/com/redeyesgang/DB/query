@@ -14,9 +14,9 @@ updateTotal = UPDATE total SET total=? WHERE fromID=? AND toID=?
 
 getTotalByID = SELECT toID,total FROM total WHERE fromID=?
 
-createUserWithSN = INSERT INTO users (telegramID, firstName, secondName, login) VALUES (?,?,?,?)
+createUserWithSN = INSERT INTO users (telegramChatID,telegramID, firstName, secondName, login) VALUES (?,?,?,?,?)
 
-createUser = INSERT INTO users (telegramID, firstName,login) VALUES (?,?,?)
+createUser = INSERT INTO users (telegramChatID,telegramID, firstName,login) VALUES (?,?,?,?)
 
 getUser = SELECT telegramID FROM users WHERE login=?
 
@@ -29,3 +29,12 @@ getAdmin = SELECT adminID FROM groups WHERE groupName=?
 insertUiG = INSERT INTO UserInGroups (userID, groupID) VALUES (?,?)
 
 transactCancel = DELETE FROM transact WHERE transactID=?
+
+deleteFromUiG = DELETE FROM UserInGroups WHERE userID=? AND groupID=?
+
+getChatIDbyTgUID = SELECT getChatIDbyTgUID FROM users WHERE telegramID=?
+
+updateChatID = UPDATE users SET telegramChatID=? WHERE telegramID=?
+
+getLoginByUID = SELECT login FROM users WHERE telegramID=?
+

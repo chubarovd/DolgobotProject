@@ -1,9 +1,8 @@
 package com.redeyesgang.DB;
 
 import java.sql.*;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
+import java.sql.Date;
+import java.util.*;
 
 public class WTransaction implements ITransaction {
     final private Connection _conn;
@@ -41,21 +40,6 @@ public class WTransaction implements ITransaction {
         return result;
     }
 
-
-    public Map<Integer, Integer> getTotal(int userID) throws SQLException {
-        Map<Integer,Integer> result = new HashMap<>();
-        PreparedStatement ps = _conn.prepareStatement(_props.getProperty("getTotalByID"));
-        ps.setInt(1,userID);
-        ResultSet rs =  ps.executeQuery();
-        while(rs.next()) {
-            result.put(rs.getInt(1),rs.getInt(2));
-        }
-        rs.close();
-        ps.close();
-        return result;
-    }
-
-
     @Override
     public void validate(int transactID) throws SQLException, TransactionException {
         PreparedStatement ps = _conn.prepareStatement(_props.getProperty("validate"));
@@ -85,6 +69,47 @@ public class WTransaction implements ITransaction {
         ps.setInt(1,transactID);
         ps.executeUpdate();
         ps.close();
+    }
+
+    @Override
+    public List<Transaction> addTransactionToGroup(int telegramID, String groupName, int amount, String desc) throws SQLException, TransactionException {
+        PreparedStatement ps = _conn.prepareStatement(_props.getProperty("getGroupID"));
+        ps.setString(1,groupName);
+        ResultSet rs = ps.executeQuery();
+        if (!rs.next()) {
+            ps.close();
+            rs.close();
+            throw new TransactionException("Такой группы не существует!");
+        }
+        ps.close();
+        rs.close();
+        ps = _conn.prepareStatement(QueryBuilderForGroup.getSelectFromGroupQuery(groupName));
+        rs = ps.executeQuery();
+        ResultSetMetaData rsmd = rs.getMetaData();
+        List<Long> users = new ArrayList<>(20);
+        while(rs.next()) {
+            users.add(rs.getLong(1));
+        }
+        rs.close();
+        ps.close();
+        int pamount = amount / users.size();
+
+        List<Transaction> res = new ArrayList<>(users.size());
+        users.forEach((user)->{
+            try {
+                Transaction transaction = new Transaction(telegramID,user,pamount);
+                transaction.setDescription(desc);
+                int transID = addTransaction(transaction);
+                transaction.setTransactID(transID);
+                res.add(transaction);
+
+            } catch (TransactionException | SQLException e) {
+                //pass
+            }
+        });
+        return res;
+
+
     }
 
 

@@ -12,9 +12,10 @@ public class WorkWithUsers implements IWorkWithUsers {
     }
 
     @Override
-    public void createUser(long telegramUid, String firstName, String dolgobotLogin, String lastName) throws SQLException, OnCreateException {
+    public void createUser(int telegramUid,long telegramChatUid, String firstName, String dolgobotLogin, String lastName) throws SQLException, OnCreateException {
+        PreparedStatement ps;
         if (lastName == null) {
-            PreparedStatement ps = _con.prepareStatement(_props.getProperty("getUser"));
+            ps = _con.prepareStatement(_props.getProperty("getUser"));
             ps.setString(1,dolgobotLogin);
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
@@ -25,28 +26,20 @@ public class WorkWithUsers implements IWorkWithUsers {
             rs.close();
             ps.close();
             ps = _con.prepareStatement(_props.getProperty("createUser"));
-            ps.setLong(1,telegramUid);
-            ps.setString(2,firstName);
-            ps.setString(3,dolgobotLogin);
+            ps.setLong(1,telegramChatUid);
+            ps.setLong(2,telegramUid);
+            ps.setString(3,firstName);
+            ps.setString(4,dolgobotLogin);
             ps.executeUpdate();
             ps.close();
             return;
         }
-        PreparedStatement ps = _con.prepareStatement(_props.getProperty("getUser"));
-        ps.setString(1,dolgobotLogin);
-        ResultSet rs = ps.executeQuery();
-        if (rs.next()) {
-            rs.close();
-            ps.close();
-            throw new OnCreateException("Пользователь с таким логином сущесвует!");
-        }
-        rs.close();
-        ps.close();
         ps = _con.prepareStatement(_props.getProperty("createUserWithSN"));
-        ps.setLong(1,telegramUid);
-        ps.setString(2,firstName);
-        ps.setString(3,lastName);
-        ps.setString(4,dolgobotLogin);
+        ps.setLong(1,telegramChatUid);
+        ps.setLong(2,telegramUid);
+        ps.setString(3,firstName);
+        ps.setString(4,lastName);
+        ps.setString(5,dolgobotLogin);
         ps.executeUpdate();
         ps.close();
     }
@@ -155,12 +148,19 @@ public class WorkWithUsers implements IWorkWithUsers {
         }
         rs.close();
         ps.close();
-        // TO DO: delete from group!
-        ps = _con.prepareStatement(QueryBuilderForGroup.getDeleteGroupQuery(groupName));
+
+        ps = _con.prepareStatement(QueryBuilderForGroup.getDeleteFromGroupQuery(groupName));
+        ps.setLong(1,telegramUid);
+        ps.executeUpdate();
+        ps.close();
+        ps = _con.prepareStatement(_props.getProperty("deleteFromUiG"));
+        ps.setLong(1,telegramUid);
+        ps.setInt(2,groupID);
         ps.executeUpdate();
         ps.close();
     }
 
+    @Override
     public long getGroupAdminID(String groupName) throws SQLException, OnCreateException {
         PreparedStatement ps  = _con.prepareStatement(_props.getProperty("getAdmin"));
         ps.setString(1,groupName);
@@ -171,6 +171,68 @@ public class WorkWithUsers implements IWorkWithUsers {
             res = rs.getLong(1);
         }else {
             throw new OnCreateException("Не сущесвует группы с таким именем!");
+        }
+        rs.close();
+        ps.close();
+        return res;
+    }
+
+    @Override
+    public long getChatIDbyTgUID(int telegramID) throws SQLException, OnCreateException {
+        PreparedStatement ps = _con.prepareStatement(_props.getProperty("getChatIDbyTgUID"));
+        ps.setLong(1,telegramID);
+        ResultSet rs = ps.executeQuery();
+        long result;
+        if (rs.next()) {
+            result = rs.getLong(1);
+        }else {
+            rs.close();
+            ps.close();
+            throw new OnCreateException("Такого пользователя нет!");
+        }
+        rs.close();
+        ps.close();
+        return result;
+    }
+
+    @Override
+    public String getLoginByTelegramID(int telegramID) throws SQLException, OnCreateException {
+        PreparedStatement ps = _con.prepareStatement(_props.getProperty("getLoginByUID"));
+        ps.setLong(1,telegramID);
+        ResultSet rs = ps.executeQuery();
+        String res;
+        if (rs.next()) res = rs.getString(1);
+        else {
+            rs.close();
+            ps.close();
+            throw new OnCreateException("Такого пользователя нет!");
+        }
+        rs.close();
+        ps.close();
+        return res;
+
+    }
+
+    @Override
+    public void updateChatID(int telegramUID, long telegramChatID) throws SQLException {
+        PreparedStatement ps = _con.prepareStatement(_props.getProperty("updateChatID"));
+        ps.setLong(1,telegramChatID);
+        ps.setLong(2,telegramUID);
+        ps.executeUpdate();
+        ps.close();
+    }
+
+    @Override
+    public long getTelegramIDbyLogin(String login) throws SQLException, OnCreateException {
+        PreparedStatement ps = _con.prepareStatement(_props.getProperty("getUser"));
+        ps.setString(1,login);
+        ResultSet rs = ps.executeQuery();
+        long res;
+        if (rs.next()) res = rs.getLong(1);
+        else{
+            rs.close();
+            ps.close();
+            throw new OnCreateException("Такого пользователя нет!");
         }
         rs.close();
         ps.close();
