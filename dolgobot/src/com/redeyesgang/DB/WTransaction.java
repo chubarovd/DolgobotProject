@@ -8,10 +8,10 @@ public class WTransaction implements ITransaction {
     final private Connection _conn;
     final private Properties _props;
 
-
     public WTransaction(Connection conn, Properties props) {
         _conn = conn;
         _props = props;
+
     }
 
 
@@ -41,7 +41,7 @@ public class WTransaction implements ITransaction {
     }
 
     @Override
-    public void validate(int transactID) throws SQLException, TransactionException {
+    public Transaction validate(int transactID) throws SQLException, TransactionException {
         PreparedStatement ps = _conn.prepareStatement(_props.getProperty("validate"));
         ps.setInt(1,transactID);
         ps.executeUpdate();
@@ -61,14 +61,30 @@ public class WTransaction implements ITransaction {
         rs.close();
         ps.close();
         updateTotal(from,to,amount);
+        return new Transaction(from,to,amount);
     }
 
     @Override
-    public void cancel(int transactID) throws SQLException {
-        PreparedStatement ps = _conn.prepareStatement(_props.getProperty("transactCancel"));
+    public Transaction cancel(int transactID) throws SQLException, TransactionException {
+        PreparedStatement ps = _conn.prepareStatement(_props.getProperty("getTransactInfo"));
+        ps.setInt(1,transactID);
+        ResultSet rs = ps.executeQuery();
+        long from,to;
+        int amount;
+        if (rs.next()) {
+            from = rs.getLong(1);
+            to = rs.getLong(2);
+            amount = rs.getInt(3);
+        }else{
+            throw new TransactionException("Database error!");
+        }
+        rs.close();
+        ps.close();
+        ps = _conn.prepareStatement(_props.getProperty("transactCancel"));
         ps.setInt(1,transactID);
         ps.executeUpdate();
         ps.close();
+        return new Transaction(from,to,amount);
     }
 
     @Override

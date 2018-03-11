@@ -6,6 +6,7 @@ import java.util.Map;
 
 public class DBWorker implements IGetInfo,ITransaction,IWorkWithUsers {
 
+
     @Override
     public Map<Long, Long> getTotal(long userID) throws SQLException {
         return null;
@@ -22,13 +23,13 @@ public class DBWorker implements IGetInfo,ITransaction,IWorkWithUsers {
     }
 
     @Override
-    public void validate(int transactID) throws SQLException, TransactionException {
-
+    public Transaction validate(int transactID) throws SQLException, TransactionException {
+        return null;
     }
 
     @Override
-    public void cancel(int transactID) throws SQLException {
-
+    public Transaction cancel(int transactID) throws SQLException, TransactionException {
+        return null;
     }
 
     @Override
