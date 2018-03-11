@@ -38,5 +38,5 @@ updateChatID = UPDATE users SET telegramChatID=? WHERE telegramID=?
 
 getLoginByUID = SELECT login FROM users WHERE telegramID=?
 
-getTransaction = SELECT toID,description,amount,data FROM transact WHERE fromID=? and isLegal='0'
+getTransaction = SELECT transactID,toID,description,amount FROM transact WHERE fromID=? and isLegal='0'
 

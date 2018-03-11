@@ -14,9 +14,8 @@ public class WTransaction implements ITransaction {
 
     }
 
-
     @Override
-    public int addTransaction(Transaction trans) throws SQLException {
+    public long addTransaction(Transaction trans) throws SQLException {
         PreparedStatement ps = _conn.prepareStatement(_props.getProperty("createTransaction"));
         ps.setLong(1, trans.getFromId());
         ps.setLong(2, trans.getToId());
@@ -31,9 +30,9 @@ public class WTransaction implements ITransaction {
         ps.setLong(2, trans.getToId());
         ps.setDate(3, dt);
         ResultSet rs = ps.executeQuery();
-        int result=-1;
+        long result=-1;
         if (rs.next()) {
-            result = rs.getInt(1);
+            result = rs.getLong(1);
         }
         rs.close();
         ps.close();
@@ -41,13 +40,13 @@ public class WTransaction implements ITransaction {
     }
 
     @Override
-    public Transaction validate(int transactID) throws SQLException, TransactionException {
+    public Transaction validate(long transactID) throws SQLException, TransactionException {
         PreparedStatement ps = _conn.prepareStatement(_props.getProperty("validate"));
-        ps.setInt(1,transactID);
+        ps.setLong(1,transactID);
         ps.executeUpdate();
         ps.close();
         ps = _conn.prepareStatement(_props.getProperty("getTransactInfo"));
-        ps.setInt(1,transactID);
+        ps.setLong(1,transactID);
         ResultSet rs = ps.executeQuery();
         long from,to;
         int amount;
@@ -65,9 +64,9 @@ public class WTransaction implements ITransaction {
     }
 
     @Override
-    public Transaction cancel(int transactID) throws SQLException, TransactionException {
+    public Transaction cancel(long transactID) throws SQLException, TransactionException {
         PreparedStatement ps = _conn.prepareStatement(_props.getProperty("getTransactInfo"));
-        ps.setInt(1,transactID);
+        ps.setLong(1,transactID);
         ResultSet rs = ps.executeQuery();
         long from,to;
         int amount;
@@ -81,7 +80,7 @@ public class WTransaction implements ITransaction {
         rs.close();
         ps.close();
         ps = _conn.prepareStatement(_props.getProperty("transactCancel"));
-        ps.setInt(1,transactID);
+        ps.setLong(1,transactID);
         ps.executeUpdate();
         ps.close();
         return new Transaction(from,to,amount);
@@ -115,7 +114,7 @@ public class WTransaction implements ITransaction {
             try {
                 Transaction transaction = new Transaction(telegramID,user,pamount);
                 transaction.setDescription(desc);
-                int transID = addTransaction(transaction);
+                long transID = addTransaction(transaction);
                 transaction.setTransactID(transID);
                 res.add(transaction);
 
@@ -129,10 +128,20 @@ public class WTransaction implements ITransaction {
     }
 
     @Override
-    public List<Transaction> getTransactions(long telegramID) {
-     //pass
+    public List<Transaction> getTransactions(long telegramID) throws SQLException, TransactionException {
+        PreparedStatement ps = _conn.prepareStatement(_props.getProperty("getTransaction"));
+        ps.setLong(1,telegramID);
+        ResultSet rs = ps.executeQuery();
+        List<Transaction> res = new ArrayList<>();
+        while (rs.next()) {
+            Transaction trans = new Transaction(telegramID,rs.getLong(2),rs.getInt(4));
+            trans.setDescription(rs.getString(3)).setTransactID(rs.getLong(1));
+            res.add(trans);
+        }
+        rs.close();
+        ps.close();
+        return res;
     }
-
 
     private void updateTotal(long from, long to, int amount) throws SQLException {
         PreparedStatement ps = _conn.prepareStatement(_props.getProperty("getTotal"));

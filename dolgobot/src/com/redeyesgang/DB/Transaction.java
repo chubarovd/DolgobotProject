@@ -10,7 +10,7 @@ public class Transaction extends Object {
     private long fromId;
     private long toId;
     private int amount;
-    private int transactID = -1;
+    private long transactID = -1;
     private String description = null;
 
     public long getFromId () {
@@ -66,11 +66,11 @@ public class Transaction extends Object {
         }
     }
 
-    public int getTransactID() {
+    public long getTransactID() {
         return transactID;
     }
 
-    public void setTransactID(int transactID) {
+    public void setTransactID(long transactID) {
         this.transactID = transactID;
     }
 

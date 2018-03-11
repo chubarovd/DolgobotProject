@@ -4,10 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
+import java.util.*;
 
 public class GetInfo implements IGetInfo {
     final private Connection _conn;
@@ -33,7 +30,24 @@ public class GetInfo implements IGetInfo {
     }
 
     @Override
-    public List<String> getGroupInfo(String groupName) {
-        return null;
+    public List< Long> getGroupInfo(String groupName) throws SQLException, OnCreateException {
+        PreparedStatement ps = _conn.prepareStatement(_props.getProperty("getGroupID"));
+        ps.setString(1,groupName);
+        ResultSet rs = ps.executeQuery();
+        if (!rs.next()) {
+            rs.close();
+            ps.close();
+            throw new OnCreateException("Такой группы не существует!");
+        }
+        rs.close();
+        ps.close();
+
+        List<Long> res = new ArrayList<>();
+        ps = _conn.prepareStatement(QueryBuilderForGroup.getSelectFromGroupQuery(groupName));
+        rs = ps.executeQuery();
+        while(rs.next()){
+            res.add(rs.getLong(1));
+        }
+        return res;
     }
 }
