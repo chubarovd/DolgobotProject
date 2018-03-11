@@ -1,6 +1,6 @@
 createTransaction = INSERT INTO transact (fromID, toID, amount, description, data) VALUES (?,?,?,?,?)
 
-getTransactionID = SELECT transactID WHERE fromID=? AND  toID=? AND data=?
+getTransactionID = SELECT transactID FROM transact WHERE fromID=? AND  toID=? AND data=?
 
 validate = UPDATE transact SET isLegal='1' WHERE transactID=?
 
@@ -8,7 +8,7 @@ getTransactInfo = SELECT fromID,toID,amount FROM transact WHERE transactID=?
 
 getTotal = SELECT total FROM total WHERE fromID=? AND toID=?
 
-createTotal = INSERT INTO total (fromID, toId, amount) VALUES (?,?,?)
+createTotal = INSERT INTO total (fromID, toId, total) VALUES (?,?,?)
 
 updateTotal = UPDATE total SET total=? WHERE fromID=? AND toID=?
 
@@ -32,11 +32,15 @@ transactCancel = DELETE FROM transact WHERE transactID=?
 
 deleteFromUiG = DELETE FROM UserInGroups WHERE userID=? AND groupID=?
 
-getChatIDbyTgUID = SELECT getChatIDbyTgUID FROM users WHERE telegramID=?
+getChatIDbyTgUID = SELECT telegramChatID FROM users WHERE telegramID=?
 
 updateChatID = UPDATE users SET telegramChatID=? WHERE telegramID=?
 
 getLoginByUID = SELECT login FROM users WHERE telegramID=?
 
-getTransaction = SELECT transactID,toID,description,amount FROM transact WHERE fromID=? and isLegal='0'
+getTransaction = SELECT transactID,fromID,description,amount FROM transact WHERE toID=? and isLegal='0'
+
+deleteFromUiGAll = DELETE From UserInGroups WHERE groupID=? 
+
+deleteFromGroups = DELETE FROM Groups Where groupID=?
 

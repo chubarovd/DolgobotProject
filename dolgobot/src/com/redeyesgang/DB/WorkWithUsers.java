@@ -73,7 +73,7 @@ public class WorkWithUsers implements IWorkWithUsers {
 
         int groupID=0;
         ps = _con.prepareStatement(_props.getProperty("getGroupID"));
-        ps.setString(1,"groupName");
+        ps.setString(1,groupName);
         rs = ps.executeQuery();
         if (rs.next()) groupID = rs.getInt(1);
         ps.close();
@@ -106,6 +106,30 @@ public class WorkWithUsers implements IWorkWithUsers {
         Statement stmt = _con.createStatement();
         stmt.execute(QueryBuilderForGroup.getDeleteGroupQuery(groupName));
         stmt.close();
+        ps = _con.prepareStatement(_props.getProperty("getGroupID"));
+        ps.setString(1,groupName);
+        rs = ps.executeQuery();
+        int groupID;
+        if (rs.next()) {
+            groupID = rs.getInt(1);
+        }else {
+            rs.close();
+            ps.close();
+            throw new OnCreateException("Группы с таким именем не сущесвует!");
+        }
+        rs.close();
+        ps.close();
+
+        ps = _con.prepareStatement(_props.getProperty("deleteFromUiGAll"));
+        ps.setInt(1,groupID);
+        ps.executeUpdate();
+        ps.close();
+
+        ps = _con.prepareStatement(_props.getProperty("deleteFromGroups"));
+        ps.setInt(1,groupID);
+        ps.executeUpdate();
+        ps.close();
+
     }
 
     @Override
@@ -121,11 +145,15 @@ public class WorkWithUsers implements IWorkWithUsers {
         }
         rs.close();
         ps.close();
+        try {
+            ps = _con.prepareStatement(QueryBuilderForGroup.getInsertToGroupQuery(groupName));
+            ps.setLong(1,telegramUid);
+            ps.executeUpdate();
+            ps.close();
+        }catch (SQLException e) {
+            throw new OnCreateException("Этот пользователь уже состоит в группе!");
+        }
 
-        ps = _con.prepareStatement(QueryBuilderForGroup.getInsertToGroupQuery(groupName));
-        ps.setLong(1,telegramUid);
-        ps.executeUpdate();
-        ps.close();
 
 
         ps = _con.prepareStatement(_props.getProperty("insertUiG"));

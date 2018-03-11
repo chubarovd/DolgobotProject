@@ -2,7 +2,7 @@ package com.redeyesgang.DB;
 
 public class QueryBuilderForGroup {
     public static String getCreateGroupQuery(String groupName) {
-        return  "CREATE TABLE "+groupName+"(member BIGINT REFERENCES users(telegramID));";
+        return  "CREATE TABLE "+groupName+"(member BIGINT PRIMARY KEY REFERENCES users(telegramID));";
 
     }
 
@@ -15,7 +15,7 @@ public class QueryBuilderForGroup {
     }
 
     public static String getInsertToGroupQuery(String groupName) {
-        return "INSERT INTO "+groupName+" member VALUES (?)";
+        return "INSERT INTO "+groupName+" (member) VALUES (?)";
     }
 
     public static String getDeleteFromGroupQuery(String groupName) {

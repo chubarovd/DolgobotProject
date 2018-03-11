@@ -2,6 +2,7 @@ package com.redeyesgang.DB;
 
 import java.sql.*;
 import java.sql.Date;
+import java.time.LocalDateTime;
 import java.util.*;
 
 public class WTransaction implements ITransaction {
@@ -21,14 +22,14 @@ public class WTransaction implements ITransaction {
         ps.setLong(2, trans.getToId());
         ps.setLong(3,trans.getAmount());
         ps.setString(4,trans.getDescription());
-        Date dt = new Date(System.currentTimeMillis());
-        ps.setDate(5, dt);
+        Timestamp dt = new Timestamp(System.currentTimeMillis());
+        ps.setTimestamp(5, dt);
         ps.executeUpdate();
         ps.close();
         ps = _conn.prepareStatement(_props.getProperty("getTransactionID"));
         ps.setLong(1, trans.getFromId());
         ps.setLong(2, trans.getToId());
-        ps.setDate(3, dt);
+        ps.setTimestamp(3, dt);
         ResultSet rs = ps.executeQuery();
         long result=-1;
         if (rs.next()) {
@@ -103,7 +104,9 @@ public class WTransaction implements ITransaction {
         ResultSetMetaData rsmd = rs.getMetaData();
         List<Long> users = new ArrayList<>(20);
         while(rs.next()) {
-            users.add(rs.getLong(1));
+            long u= rs.getLong(1);
+            if (u!=telegramID)
+                users.add(u);
         }
         rs.close();
         ps.close();
@@ -134,7 +137,7 @@ public class WTransaction implements ITransaction {
         ResultSet rs = ps.executeQuery();
         List<Transaction> res = new ArrayList<>();
         while (rs.next()) {
-            Transaction trans = new Transaction(telegramID,rs.getLong(2),rs.getInt(4));
+            Transaction trans = new Transaction(rs.getLong(2),telegramID,rs.getInt(4));
             trans.setDescription(rs.getString(3)).setTransactID(rs.getLong(1));
             res.add(trans);
         }
