@@ -1,15 +1,17 @@
 package com.redeyesgang.DB;
 
+import java.util.Objects;
+
 /**
  * Created by User on 05.03.2018.
  */
 
-public class Transaction {
+public class Transaction extends Object {
     private long fromId;
     private long toId;
     private int amount;
-    private int transactID=-1;
-    private String description=null;
+    private int transactID = -1;
+    private String description = null;
 
     public long getFromId () {
         return fromId;
@@ -36,9 +38,22 @@ public class Transaction {
         return this;
     }
 
+    public Transaction setDescription (String description) {
+        this.description = description;
+        return this;
+    }
+
+    public Transaction (long fromId) {
+        super();
+        this.fromId = fromId;
+        this.toId = -1;
+        this.amount = -1;
+    }
+
     public Transaction (long fromId, long toId, int amount) throws TransactionException {
+        super();
         if (fromId == toId) {
-            throw new TransactionException ("Parameters fromId and toId couldn't be equals.");
+            throw new TransactionException ("Вы не можете добавть транзакцию самому себе.");
         } else {
             this.fromId = fromId;
             this.toId = toId;
@@ -47,7 +62,7 @@ public class Transaction {
             this.amount = amount;
         } else {
             throw new TransactionException (
-                "Invalid amount. It should be positive integer number.");
+                "Некорректная сумма. Сумма должна быть целым положительным числом.");
         }
     }
 
@@ -57,5 +72,9 @@ public class Transaction {
 
     public void setTransactID(int transactID) {
         this.transactID = transactID;
+    }
+
+    public String toString () {
+        return "from: " /*+ getDolgobotLogin (fromId) + " to: " + getDolgobotLogin (toId)*/;
     }
 }
