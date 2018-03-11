@@ -1,5 +1,5 @@
 CREATE TABLE users (
-   telegramID  INT PRIMARY KEY
+   telegramID  BIGINT PRIMARY KEY
   ,firstName   VARCHAR(30) NOT NULL
   ,secondName  VARCHAR(30) NULL
   ,login       VARCHAR(30) NOT NULL UNIQUE
@@ -7,8 +7,8 @@ CREATE TABLE users (
 
 CREATE TABLE transact (
    transactID  BIGSERIAL PRIMARY KEY
-  ,fromID      INT REFERENCES users(telegramID)
-  ,toID        INT REFERENCES users(telegramID)
+  ,fromID      BIGINT REFERENCES users(telegramID)
+  ,toID        BIGINT REFERENCES users(telegramID)
   ,amount      INT NOT NULL CHECK (amount > 0)
   ,description VARCHAR(30)
   ,isLegal     BOOLEAN NOT NULL DEFAULT '0'
@@ -16,8 +16,8 @@ CREATE TABLE transact (
 );
 
 CREATE TABLE total (
-   fromID      INT REFERENCES users(telegramID)
-  ,toID        INT REFERENCES users(telegramID)
+   fromID      BIGINT REFERENCES users(telegramID)
+  ,toID        BIGINT REFERENCES users(telegramID)
   ,total       INT NOT NULL
   ,UNIQUE (fromID,toID)
 );
@@ -25,11 +25,11 @@ CREATE TABLE total (
 CREATE TABLE Groups(
    groupID     SERIAL PRIMARY KEY
   ,groupName   VARCHAR(30) NOT NULL UNIQUE
-  ,adminID     INT REFERENCES users(telegramID)
+  ,adminID     BIGINT REFERENCES users(telegramID)
 );
 
 CREATE TABLE UserInGroups(
-   userID      INT REFERENCES users(telegramID)
+   userID      BIGINT REFERENCES users(telegramID)
   ,groupID     INT REFERENCES Groups(groupID)
   ,UNIQUE (userID,groupID)
 );
@@ -37,5 +37,4 @@ CREATE TABLE UserInGroups(
 CREATE INDEX findTransact ON transact (fromID, toID);
 
 CREATE INDEX findTransactWithData ON transact (fromID, toID,data);
-
 
