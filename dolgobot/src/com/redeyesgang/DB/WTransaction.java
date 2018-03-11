@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
-public class WTransaction implements ITransaction, IGetTotal{
+public class WTransaction implements ITransaction, IGetTotal {
     final private Connection _conn;
     final private Properties _props;
 
@@ -77,6 +77,14 @@ public class WTransaction implements ITransaction, IGetTotal{
         rs.close();
         ps.close();
         updateTotal(from,to,amount);
+    }
+
+    @Override
+    public void cancel(int transactID) throws SQLException {
+        PreparedStatement ps = _conn.prepareStatement(_props.getProperty("transactCancel"));
+        ps.setInt(1,transactID);
+        ps.executeUpdate();
+        ps.close();
     }
 
 

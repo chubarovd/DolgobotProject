@@ -27,3 +27,5 @@ createGroup = INSERT INTO groups (groupName,adminID) VALUES (?,?)
 getAdmin = SELECT adminID FROM groups WHERE groupName=?
 
 insertUiG = INSERT INTO UserInGroups (userID, groupID) VALUES (?,?)
+
+transactCancel = DELETE FROM transact WHERE transactID=?

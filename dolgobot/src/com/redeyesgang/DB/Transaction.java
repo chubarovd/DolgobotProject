@@ -5,15 +5,16 @@ package com.redeyesgang.DB;
  */
 
 public class Transaction {
-    private int fromId;
-    private int toId;
+    private long fromId;
+    private long toId;
     private int amount;
-    private String description;
+    private int transactID=-1;
+    private String description=null;
 
-    public int getFromId () {
+    public long getFromId () {
         return fromId;
     }
-    public int getToId () {
+    public long getToId () {
         return toId;
     }
     public int getAmount () {
@@ -22,8 +23,20 @@ public class Transaction {
     public String getDescription () {
         return description;
     }
+    public Transaction setFromId (long fromId) {
+        this.fromId = fromId;
+        return this;
+    }
+    public Transaction setToId (long toId) {
+        this.toId = toId;
+        return this;
+    }
+    public Transaction setAmount (int amount) {
+        this.amount = amount;
+        return this;
+    }
 
-    public Transaction (int fromId, int toId, int amount) throws TransactionException {
+    public Transaction (long fromId, long toId, int amount) throws TransactionException {
         if (fromId == toId) {
             throw new TransactionException ("Parameters fromId and toId couldn't be equals.");
         } else {
@@ -36,5 +49,13 @@ public class Transaction {
             throw new TransactionException (
                 "Invalid amount. It should be positive integer number.");
         }
+    }
+
+    public int getTransactID() {
+        return transactID;
+    }
+
+    public void setTransactID(int transactID) {
+        this.transactID = transactID;
     }
 }

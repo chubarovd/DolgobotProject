@@ -115,4 +115,66 @@ public class WorkWithUsers implements IWorkWithUsers {
         stmt.execute(QueryBuilderForGroup.getDeleteGroupQuery(groupName));
         stmt.close();
     }
+
+    @Override
+    public void addUserToGroup(int telegramUid, String groupName) throws SQLException, OnCreateException {
+        int groupID;
+        PreparedStatement ps = _con.prepareStatement(_props.getProperty("getGroupID"));
+        ps.setString(1,groupName);
+        ResultSet rs  = ps.executeQuery();
+        if(rs.next()) {
+            groupID = rs.getInt(1);
+        }else {
+            throw new OnCreateException("Не сущесвует группы с таким именем!");
+        }
+        rs.close();
+        ps.close();
+
+        ps = _con.prepareStatement(QueryBuilderForGroup.getInsertToGroupQuery(groupName));
+        ps.setInt(1,telegramUid);
+        ps.executeUpdate();
+        ps.close();
+
+
+        ps = _con.prepareStatement(_props.getProperty("insertUiG"));
+        ps.setInt(1,telegramUid);
+        ps.setInt(2,groupID);
+        ps.executeUpdate();
+        ps.close();
+    }
+
+    @Override
+    public void deleteUserFromGroup(int telegramUid, String groupName) throws SQLException, OnCreateException {
+        int groupID;
+        PreparedStatement ps = _con.prepareStatement(_props.getProperty("getGroupID"));
+        ps.setString(1,groupName);
+        ResultSet rs  = ps.executeQuery();
+        if(rs.next()) {
+            groupID = rs.getInt(1);
+        }else {
+            throw new OnCreateException("Не сущесвует группы с таким именем!");
+        }
+        rs.close();
+        ps.close();
+
+        ps = _con.prepareStatement(QueryBuilderForGroup.getDeleteGroupQuery(groupName));
+        ps.executeUpdate();
+        ps.close();
+    }
+
+    public int getGroupAdminID(String groupName) throws SQLException, OnCreateException {
+        PreparedStatement ps  = _con.prepareStatement(_props.getProperty("getAdmin"));
+        ps.setString(1,groupName);
+        ResultSet rs = ps.executeQuery();
+        int res;
+
+        if (rs.next()) {
+            res = rs.getInt(1);
+        }else {
+            throw new OnCreateException("Не сущесвует группы с таким именем!");
+        }
+        rs.close();
+        ps.close();
+        return res;
+    }
 }
