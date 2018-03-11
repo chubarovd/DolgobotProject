@@ -1,5 +1,6 @@
 CREATE TABLE users (
    telegramID  BIGINT PRIMARY KEY
+  ,telegramChatID BIGINT NOT NULL UNIQUE 
   ,firstName   VARCHAR(30) NOT NULL
   ,secondName  VARCHAR(30) NULL
   ,login       VARCHAR(30) NOT NULL UNIQUE
@@ -37,4 +38,5 @@ CREATE TABLE UserInGroups(
 CREATE INDEX findTransact ON transact (fromID, toID);
 
 CREATE INDEX findTransactWithData ON transact (fromID, toID,data);
+
 
