@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
-public class WTransaction implements ITransaction, IGetTotal {
+public class WTransaction implements ITransaction {
     final private Connection _conn;
     final private Properties _props;
 
@@ -19,17 +19,17 @@ public class WTransaction implements ITransaction, IGetTotal {
     @Override
     public int addTransaction(Transaction trans) throws SQLException {
         PreparedStatement ps = _conn.prepareStatement(_props.getProperty("createTransaction"));
-        ps.setInt(1, trans.getFromId());
-        ps.setInt(2, trans.getToId());
-        ps.setInt(3,trans.getAmount());
+        ps.setLong(1, trans.getFromId());
+        ps.setLong(2, trans.getToId());
+        ps.setLong(3,trans.getAmount());
         ps.setString(4,trans.getDescription());
         Date dt = new Date(System.currentTimeMillis());
         ps.setDate(5, dt);
         ps.executeUpdate();
         ps.close();
         ps = _conn.prepareStatement(_props.getProperty("getTransactionID"));
-        ps.setInt(1, trans.getFromId());
-        ps.setInt(2, trans.getToId());
+        ps.setLong(1, trans.getFromId());
+        ps.setLong(2, trans.getToId());
         ps.setDate(3, dt);
         ResultSet rs = ps.executeQuery();
         int result=-1;
@@ -42,7 +42,6 @@ public class WTransaction implements ITransaction, IGetTotal {
     }
 
 
-    @Override
     public Map<Integer, Integer> getTotal(int userID) throws SQLException {
         Map<Integer,Integer> result = new HashMap<>();
         PreparedStatement ps = _conn.prepareStatement(_props.getProperty("getTotalByID"));
@@ -66,10 +65,11 @@ public class WTransaction implements ITransaction, IGetTotal {
         ps = _conn.prepareStatement(_props.getProperty("getTransactInfo"));
         ps.setInt(1,transactID);
         ResultSet rs = ps.executeQuery();
-        int from,to,amount;
+        long from,to;
+        int amount;
         if (rs.next()) {
-            from = rs.getInt(1);
-            to = rs.getInt(2);
+            from = rs.getLong(1);
+            to = rs.getLong(2);
             amount = rs.getInt(3);
         }else{
             throw new TransactionException("Database error!");
@@ -88,32 +88,32 @@ public class WTransaction implements ITransaction, IGetTotal {
     }
 
 
-    private void updateTotal(int from, int to, int amount) throws SQLException {
+    private void updateTotal(long from, long to, int amount) throws SQLException {
         PreparedStatement ps = _conn.prepareStatement(_props.getProperty("getTotal"));
-        ps.setInt(1,from);
-        ps.setInt(2,to);
+        ps.setLong(1,from);
+        ps.setLong(2,to);
         ResultSet rs = ps.executeQuery();
         if (rs.next()) {
             int total = rs.getInt(1);
             PreparedStatement pss = _conn.prepareStatement(_props.getProperty("updateTotal"));
-            pss.setInt(1,total+amount);
-            pss.setInt(2,from);
-            pss.setInt(3,to);
+            pss.setLong(1,total+amount);
+            pss.setLong(2,from);
+            pss.setLong(3,to);
             pss.executeUpdate();
-            pss.setInt(1,total-amount);
-            pss.setInt(3,from);
-            pss.setInt(2,to);
+            pss.setLong(1,total-amount);
+            pss.setLong(3,from);
+            pss.setLong(2,to);
             pss.executeUpdate();
             pss.close();
         }else {
             PreparedStatement pss = _conn.prepareStatement(_props.getProperty("createTotal"));
-            pss.setInt(1,from);
-            pss.setInt(2,to);
-            pss.setInt(3,amount);
+            pss.setLong(1,from);
+            pss.setLong(2,to);
+            pss.setLong(3,amount);
             pss.executeUpdate();
-            pss.setInt(2,from);
-            pss.setInt(1,to);
-            pss.setInt(3,-amount);
+            pss.setLong(2,from);
+            pss.setLong(1,to);
+            pss.setLong(3,-amount);
             pss.executeUpdate();
             pss.close();
         }

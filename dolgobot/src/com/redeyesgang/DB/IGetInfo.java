@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 public interface IGetInfo {
-    Map<Integer,Integer> getTotal(int userID) throws SQLException;
+    Map<Integer,Integer> getTotal(long userID) throws SQLException;
     List<String> getGroupInfo(String groupName);
 
 
