@@ -11,3 +11,5 @@
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
 dolgobot/src/com/redeyesgang/tg/props
+dolgobot/src/com/redeyesgang/DB/server
+dolgobot/src/com/redeyesgang/DB/query
