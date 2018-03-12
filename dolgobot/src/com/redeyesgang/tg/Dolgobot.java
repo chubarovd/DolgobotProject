@@ -213,6 +213,7 @@ public class Dolgobot extends TelegramLongPollingBot {
                         break;
                 }
                 users.remove (tgId);
+                return;
             }
             switch (temp.getState ()) {
                 case SENDS_LOGIN:
