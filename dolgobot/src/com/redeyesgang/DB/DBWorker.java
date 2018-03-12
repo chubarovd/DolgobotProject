@@ -20,7 +20,7 @@ public class DBWorker implements IGetInfo,ITransaction,IWorkWithUsers {
         Properties props = new Properties();
         props.load(new FileInputStream("query"));
         Properties propsServer = new Properties();
-        props.load(new FileInputStream("server"));
+        propsServer.load(new FileInputStream("server"));
         Connection conGet = DriverManager.getConnection(propsServer.getProperty("server"),
                 propsServer.getProperty("login"),propsServer.getProperty("password"));
         Connection conTrans = DriverManager.getConnection(propsServer.getProperty("server"),
