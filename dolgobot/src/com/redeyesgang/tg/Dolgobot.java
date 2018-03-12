@@ -171,7 +171,7 @@ public class Dolgobot extends TelegramLongPollingBot {
                     sendMsg (
                         in.getChatId (),
                         "=Возможные команды=\n" +
-                            " # Узнать про все, связанные с Вами, задолженности /show" +
+                            " # Узнать про все, связанные с Вами, задолженности /show\n" +
                             " # Добавить новую транзакцию /addtr\n" +
                             " # Добавить групповую транзакцию /addgrouptr " +
                             "(в этом случае указанная Вами сумма будет " +
@@ -179,6 +179,9 @@ public class Dolgobot extends TelegramLongPollingBot {
                             " # Создать новую группу /newgroup\n" +
                             " # Удалить группу /deletegroup\n" +
                             " # Прервать любое действие /break");
+                    break;
+                case "/break":
+                    sendMsg (in.getChatId (), "Вам сейчас нечего прервать.");
                     break;
                 default:
                     sendMsg (
@@ -204,6 +207,11 @@ public class Dolgobot extends TelegramLongPollingBot {
                         break;
                     case SENDS_GROUP_MEMBERS:
                         sendMsg (in.getChatId (), "Создание группы отменено.");
+                        try {
+                            dbObj.deleteGroup (tgId, temp.getGroupName ());
+                        } catch (Exception e) {
+                            e.printStackTrace ();
+                        }
                         break;
                     case SENDS_GROUP_NAME_TR:
                         sendMsg (in.getChatId (), "Создание групповой транзакции отменено.");
@@ -221,26 +229,18 @@ public class Dolgobot extends TelegramLongPollingBot {
                         Execute (
                             new SendMessage ()
                                 .setChatId (in.getChatId ())
-                                .setText ("Слишком много символов! Придумайте новый логин."));
+                                .setText ("Слишком много символов! Придумайте другой логин."));
                     } else {
                         try {
                             dbObj.createUser (tgId, in.getChatId (), in.getFrom ().getFirstName (), in_text, in.getFrom ().getLastName ());
-                            Execute (
-                                new SendMessage ()
-                                    .setChatId (in.getChatId ())
-                                    .setText ("Отлично! Чтобы узнать, что я могу, отправьте /help"));
+                            sendMsg (in.getChatId (), "Отлично! Чтобы узнать, что я могу, отправьте /help");
                             users.remove (tgId);
                         } catch (OnCreateException e) {
-                            Execute (
-                                new SendMessage ()
-                                    .setChatId (in.getChatId ())
-                                    .setText (e.getMessage ()));
-                        } catch (SQLException e) {
+                            sendMsg (in.getChatId (), "Кажется, этот логин уже занят. Придумайте другой.");
                             e.printStackTrace ();
-                            Execute (
-                                new SendMessage ()
-                                    .setChatId (in.getChatId ())
-                                    .setText ("Упс! Что-то случилось с базой данный. Попробуйте позже."));
+                        } catch (SQLException e) {
+                            sendMsg (in.getChatId (), "Упс! Что-то случилось с базой данный. Попробуйте позже.");
+                            e.printStackTrace ();
                         }
                     }
                     break;
@@ -248,21 +248,12 @@ public class Dolgobot extends TelegramLongPollingBot {
                     try {
                         temp.getTransaction ().setToId (dbObj.getTelegramIDbyLogin (in_text));
                         temp.setState (User.State.SENDS_AMOUNT);
-                        Execute (
-                            new SendMessage ()
-                                .setChatId (in.getChatId ())
-                                .setText ("Введите сумму."));
+                        sendMsg (in.getChatId (), "Введите сумму.");
                     } catch (SQLException e) {
+                        sendMsg (in.getChatId (), "Упс! Что-то случилось с базой данный. Попробуйте позже.");
                         e.printStackTrace ();
-                        Execute (
-                            new SendMessage ()
-                                .setChatId (in.getChatId ())
-                                .setText ("Упс! Что-то случилось с базой данный. Попробуйте позже."));
                     } catch (OnCreateException e) {
-                        Execute (
-                            new SendMessage ()
-                                .setChatId (in.getChatId ())
-                                .setText ("Такого пользователя нет. Проверьте правильность введенного имени."));
+                        sendMsg (in.getChatId (), "Такого пользователя нет. Проверьте правильность введенного имени.");
                         e.printStackTrace ();
                     }
                     break;
@@ -270,58 +261,40 @@ public class Dolgobot extends TelegramLongPollingBot {
                     try {
                         int amount = Integer.valueOf (in_text);
                         if (amount <= 0) {
-                            Execute (
-                                new SendMessage ()
-                                    .setChatId (in.getChatId ())
-                                    .setText ("Некорректная сумма. Это должно быть целое положительное число."));
+                            sendMsg (in.getChatId (), "Некорректная сумма. Это должно быть целое положительное число.");
                         } else {
                             temp.setState (User.State.SENDS_DESCRIPTION);
                             temp.getTransaction ().setAmount (amount);
-                            Execute (
-                                new SendMessage ()
-                                    .setChatId (in.getChatId ())
-                                    .setText ("Добавьте описание транзакции."));
+                            sendMsg (in.getChatId (), "Добавьте описание транзакции.");
                         }
                     } catch (NumberFormatException e) {
-                        Execute (
-                            new SendMessage ()
-                                .setChatId (in.getChatId ())
-                                .setText ("Некорректная сумма. Это должно быть целое положительное число."));
+                        sendMsg (in.getChatId (), "Некорректная сумма. Это должно быть целое положительное число.");
+                        e.printStackTrace ();
                     }
                     break;
                 case SENDS_DESCRIPTION:
                     temp.getTransaction ().setDescription (in_text);
                     try {
                         long transactionId = dbObj.addTransaction (temp.getTransaction ());
-                        Execute (
-                            new SendMessage ()
-                                .setChatId (tgId)
-                                .setText (
-                                    "Готово! Вы получите уведомление, когда пользователь подтвердит Вашу транзакцию."));
+                        sendMsg (in.getChatId (), "Готово! Вы получите уведомление, когда пользователь подтвердит Вашу транзакцию.");
                         Execute (
                             new SendMessage ()
                                 .setChatId (dbObj.getChatIDbyTgUID (temp.getTransaction ().getToId ()))
                                 .setText ("Новая транзакция\n" + temp.getTransaction ().toString ())
                                 .setReplyMarkup (getConfirmationKeyboard (transactionId)));
                     } catch (SQLException e) {
-                        Execute (
-                            new SendMessage ()
-                                .setChatId (in.getChatId ())
-                                .setText ("Ошибка в базе данных. Побробуйте позже."));
-                    } catch (OnCreateException e) {
+                        sendMsg (in.getChatId (), "Ошибка в базе данных. Побробуйте позже.");
                         e.printStackTrace ();
-                        Execute (
-                            new SendMessage ()
-                                .setChatId (in.getChatId ())
-                                .setText ("Неизвестная ошибка. Побробуйте позже."));
+                    } catch (OnCreateException e) {
+                        sendMsg (in.getChatId (), "Неизвестная ошибка. Побробуйте позже.");
+                        e.printStackTrace ();
                     }
                     users.remove (tgId);
                     break;
                 case SENDS_GROUP_NAME:
                     try {
                         dbObj.createGroup (tgId, in_text);
-                        sendMsg (
-                            in.getChatId (),
+                        sendMsg (in.getChatId (),
                             "Группа создана!\n" +
                             "Теперь отправьте логин пользователя, которому вы хотите выслать приглашение. " +
                             "Когда он подтвердит или отклонит Ваше приглашение, Вы получите уведомление.\n" +
@@ -342,18 +315,33 @@ public class Dolgobot extends TelegramLongPollingBot {
                     } catch (SQLException e) {
                         e.printStackTrace ();
                     } catch (OnCreateException e) {
-                        sendMsg (
-                            in.getChatId (),
+                        sendMsg (in.getChatId (),
                             "Такого пользователя не существует. Хотите пригласить кого-то другого?\n" +
                             "Завершить создание /done\nОтменить создание /break");
                     }
                     try {
                         dbObj.addUserToGroup (newMemberTgId, temp.getGroupName ());
                     } catch (SQLException e) {
+                        sendMsg (in.getChatId (), "Ошибка в базе данных. Побробуйте позже.");
                         e.printStackTrace ();
                     } catch (OnCreateException e) {
                         e.printStackTrace ();
                     }
+                    break;
+                case SENDS_GROUP_NAME_TR:
+                    try {
+                        dbObj.getGroupInfo (in_text);
+                        sendMsg (in.getChatId (), "Введите сумму");
+                    } catch (SQLException e) {
+                        sendMsg (in.getChatId (), "Ошибка в базе данных. Побробуйте позже.");
+                        e.printStackTrace ();
+                    } catch (OnCreateException e) {
+                        sendMsg (in.getChatId (), "Группа с таким названием уже существует. Придумайте другое.");
+                        e.printStackTrace ();
+                    }
+                    break;
+                case SENDS_AMOUNT_GR_TR:
+
                     break;
             }
         }
