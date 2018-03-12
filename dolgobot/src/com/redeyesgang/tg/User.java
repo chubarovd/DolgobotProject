@@ -1,6 +1,9 @@
 package com.redeyesgang.tg;
 
 import com.redeyesgang.DB.Transaction;
+import com.redeyesgang.DB.TransactionException;
+
+import java.util.List;
 
 /**
  * Created by User on 06.03.2018.
@@ -11,33 +14,39 @@ public class User {
         SENDS_LOGIN,
         SENDS_DEST_USER,
         SENDS_AMOUNT,
-        SENDS_DESCRIPTION
+        SENDS_DESCRIPTION,
+        SENDS_GROUP_NAME,
+        SENDS_GROUP_MEMBERS,
+        SENDS_GROUP_NAME_TR,
+        SENDS_AMOUNT_GR_TR
     }
 
-    //private int userId;
     private State state;
     private Transaction transaction;
+    private String groupName;
 
-    public User () {
-
+    public User (State state) {
+        this.state = state;
     }
-
-    /*public User (int userId) {
-        this.userId = userId;
-    }*/
-
-    /*public int getUserId () {
-        return userId;
-    }*/
+    public User initTransaction (long userId) {
+        this.transaction = new Transaction (userId);
+        return this;
+    }
     public State getState () {
         return state;
     }
     public Transaction getTransaction () {
         return transaction;
     }
-
     public User setState (State state) {
         this.state = state;
+        return this;
+    }
+    public String getGroupName () {
+        return groupName;
+    }
+    public User setGroupName (String groupName) {
+        this.groupName = groupName;
         return this;
     }
 }
