@@ -39,10 +39,3 @@ CREATE INDEX findTransact ON transact (fromID, toID);
 
 CREATE INDEX findTransactWithData ON transact (fromID, toID,data);
 
-SELECT * FROM users;
-
-DROP TABLE UserInGroups;
-DROP TABLE Groups;
-DROP TABLE total;
-DROP TABLE transact;
-DROP TABLE users;
