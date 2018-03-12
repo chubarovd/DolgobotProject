@@ -78,7 +78,7 @@ public class Dolgobot extends TelegramLongPollingBot {
         int messageId = update.getCallbackQuery ().getMessage ().getMessageId ();
         long chatId = update.getCallbackQuery ().getMessage ().getChatId ();
         char key = callbackData.toCharArray ()[0];
-        int transactionId = Integer.valueOf (callbackData.substring (1));
+        long transactionId = Long.valueOf (callbackData.substring (1));
 
         EditMessageText editedMessage =
             new EditMessageText ().setMessageId (messageId).setChatId (chatId);
@@ -140,7 +140,7 @@ public class Dolgobot extends TelegramLongPollingBot {
                                 new SendMessage ()
                                     .setChatId (in.getChatId ())
                                     .setText ("Новая транзакция\n" + tr.toString ())
-                                    .setReplyMarkup (getConfirmationKeyboard (tr)));
+                                    .setReplyMarkup (getConfirmationKeyboard (tr.getTransactID ())));
                         }
                     } catch (SQLException e) {
                         Execute (new SendMessage (tgId, "Неизвестная ошибка. Попробуйте позже."));
@@ -291,7 +291,7 @@ public class Dolgobot extends TelegramLongPollingBot {
                 case SENDS_DESCRIPTION:
                     temp.getTransaction ().setDescription (in_text);
                     try {
-                        dbObj.addTransaction (temp.getTransaction ());
+                        long transactionId = dbObj.addTransaction (temp.getTransaction ());
                         Execute (
                             new SendMessage ()
                                 .setChatId (tgId)
@@ -301,7 +301,7 @@ public class Dolgobot extends TelegramLongPollingBot {
                             new SendMessage ()
                                 .setChatId (dbObj.getChatIDbyTgUID (temp.getTransaction ().getToId ()))
                                 .setText ("Новая транзакция\n" + temp.getTransaction ().toString ())
-                                .setReplyMarkup (getConfirmationKeyboard (temp.getTransaction ())));
+                                .setReplyMarkup (getConfirmationKeyboard (transactionId)));
                     } catch (SQLException e) {
                         Execute (
                             new SendMessage ()
@@ -375,18 +375,18 @@ public class Dolgobot extends TelegramLongPollingBot {
             e.printStackTrace ();
         }
     }
-    private ReplyKeyboard getConfirmationKeyboard (Transaction transaction) {
+    private ReplyKeyboard getConfirmationKeyboard (long transactionId) {
         InlineKeyboardMarkup keyboard = new InlineKeyboardMarkup();
         List<List<InlineKeyboardButton>> rows = new ArrayList<>();
         List<InlineKeyboardButton> row = new ArrayList<>();
         row.add(
             new InlineKeyboardButton()
                 .setText("Принять")
-                .setCallbackData("1" + transaction.getTransactID ()));
+                .setCallbackData("1" + transactionId));
         row.add(
             new InlineKeyboardButton()
                 .setText("Отклонить")
-                .setCallbackData("0" + transaction.getTransactID ()));
+                .setCallbackData("0" + transactionId));
         rows.add(row);
         keyboard.setKeyboard(rows);
 
