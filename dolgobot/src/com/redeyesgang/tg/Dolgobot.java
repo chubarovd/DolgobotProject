@@ -223,7 +223,7 @@ public class Dolgobot extends TelegramLongPollingBot {
                                 .setText ("Слишком много символов! Придумайте новый логин."));
                     } else {
                         try {
-                            dbObj.createUser (in.getFrom ().getId (), tgId, in.getFrom ().getFirstName (), in_text, in.getFrom ().getLastName ());
+                            dbObj.createUser (tgId, in.getChatId (), in.getFrom ().getFirstName (), in_text, in.getFrom ().getLastName ());
                             Execute (
                                 new SendMessage ()
                                     .setChatId (in.getChatId ())
