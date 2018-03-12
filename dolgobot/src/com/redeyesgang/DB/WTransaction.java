@@ -158,7 +158,7 @@ public class WTransaction implements ITransaction {
             pss.setLong(2,from);
             pss.setLong(3,to);
             pss.executeUpdate();
-            pss.setLong(1,total-amount);
+            pss.setLong(1,-total-amount);
             pss.setLong(3,from);
             pss.setLong(2,to);
             pss.executeUpdate();
