@@ -16,13 +16,13 @@ public class GetInfo implements IGetInfo {
     }
 
     @Override
-    public Map<Long,Long> getTotal(long userID) throws SQLException {
-        Map<Long,Long> result = new HashMap<>();
+    public Map<Long,Integer> getTotal(long userID) throws SQLException {
+        Map<Long,Integer> result = new HashMap<>();
         PreparedStatement ps = _conn.prepareStatement(_props.getProperty("getTotalByID"));
         ps.setLong(1,userID);
         ResultSet rs =  ps.executeQuery();
         while(rs.next()) {
-            result.put(rs.getLong(1),rs.getLong(2));
+            result.put(rs.getLong(1),rs.getInt(2));
         }
         rs.close();
         ps.close();
@@ -49,5 +49,92 @@ public class GetInfo implements IGetInfo {
             res.add(rs.getLong(1));
         }
         return res;
+    }
+
+    @Override
+    public List<String> getGroupsNamesForUser(long telegramID) throws SQLException {
+        List<Integer> groupsID = getGroupsIDsForUser(telegramID);
+        List<String> result = new ArrayList<>();
+        for(int groupID:groupsID) {
+            result.add(getGroupNameByID(groupID));
+        }
+        return result;
+    }
+
+    @Override
+    public Set<UserDB> getUsersInGroups(long telegramID) throws SQLException {
+        Set<UserDB> result = new HashSet<>();
+        List<Integer> groups = getGroupsIDsForUser(telegramID);
+        if (groups.isEmpty()) return result;
+        for(int group:groups) {
+            List<Long> users = getUsersInGroup(group);
+            for(long user:users) {
+                result.add(getUserInfo(user));
+            }
+        }
+        return result;
+    }
+    private String getGroupNameByID (int groupID) throws SQLException {
+        PreparedStatement ps = _conn.prepareStatement(_props.getProperty("getGroupName"));
+        ps.setInt(1,groupID);
+        ResultSet rs = ps.executeQuery();
+        if (rs.next()) {
+            String result = rs.getString(1);
+            rs.close();
+            ps.close();
+            return result;
+        }
+        else {
+            throw new SQLException("Oops!");
+        }
+    }
+
+    private List<Integer> getGroupsIDsForUser(long telegramID) throws SQLException {
+        PreparedStatement ps = _conn.prepareStatement(_props.getProperty("getUiG"));
+        ps.setLong(1,telegramID);
+        ResultSet rs = ps.executeQuery();
+        List<Integer> result = new ArrayList<>();
+        while (rs.next()) {
+            result.add(rs.getInt(1));
+        }
+        rs.close();
+        ps.close();
+        return result;
+    }
+
+    private List<Long> getUsersInGroup(int groupID) throws SQLException {
+        PreparedStatement ps = _conn.prepareStatement(
+                QueryBuilderForGroup.getSelectFromGroupQuery(getGroupNameByID(groupID)));
+        ResultSet rs = ps.executeQuery();
+        List<Long> result = new ArrayList<>();
+        while(rs.next()) {
+            result.add(rs.getLong(1));
+        }
+        rs.close();
+        ps.close();
+        return result;
+    }
+
+    private UserDB getUserInfo(long telegramID) throws SQLException {
+        PreparedStatement ps = _conn.prepareStatement(_props.getProperty("getUserInfo"));
+        ps.setLong(1,telegramID);
+        ResultSet rs = ps.executeQuery();
+        if (rs.next()) {
+            long chatID = rs.getLong(1);
+            String firstName = rs.getString(2);
+            String login = rs.getString(4);
+            String secondName = rs.getString(3);
+            if (rs.wasNull()) {
+                secondName = null;
+            }
+            rs.close();
+            ps.close();
+            return new UserDB(telegramID,chatID,firstName,secondName,login);
+        }
+        else {
+            rs.close();
+            ps.close();
+            throw new SQLException("Oops!");
+        }
     }
 }

@@ -9,6 +9,7 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 
 public class DBWorker implements IGetInfo,ITransaction,IWorkWithUsers {
     private IGetInfo getter;
@@ -18,9 +19,9 @@ public class DBWorker implements IGetInfo,ITransaction,IWorkWithUsers {
     public DBWorker() throws ClassNotFoundException, IOException, SQLException {
         Class.forName("org.postgresql.Driver");
         Properties props = new Properties();
-        props.load(new FileInputStream("query"));
+        props.load(new FileInputStream("/home/andrc/IdeaProjects/dolgobot/src/com/redeyesgang/DB/query"));
         Properties propsServer = new Properties();
-        propsServer.load(new FileInputStream("server"));
+        propsServer.load(new FileInputStream("/home/andrc/IdeaProjects/dolgobot/src/com/redeyesgang/DB/server"));
         Connection conGet = DriverManager.getConnection(propsServer.getProperty("server"),
                 propsServer.getProperty("login"),propsServer.getProperty("password"));
         Connection conTrans = DriverManager.getConnection(propsServer.getProperty("server"),
@@ -71,27 +72,27 @@ public class DBWorker implements IGetInfo,ITransaction,IWorkWithUsers {
     public void deleteGroup(long telegramUid, String groupName) throws SQLException, OnCreateException {
         workWithUsers.deleteGroup(telegramUid,groupName);
     }
+
     @Override
     public void addUserToGroup(long telegramUid, String groupName) throws SQLException, OnCreateException {
         workWithUsers.addUserToGroup(telegramUid,groupName);
     }
-    public void addUserToGroupWithCheck(long telegramUidMayBeAdmin,long telegramUid, String groupName) throws SQLException, OnCreateException {
-        long adminID =getGroupAdminID(groupName);
-        if (telegramUidMayBeAdmin==adminID) addUserToGroup(telegramUid,groupName);
-        else throw new OnCreateException("Ошибка доступа");
-    }
 
+    public boolean addUserToGroupCheck(long telegramUid, String groupName) throws SQLException, OnCreateException {
+        long adminID =getGroupAdminID(groupName);
+        return adminID == telegramUid;
+    }
 
     @Override
     public void deleteUserFromGroup(long telegramUid, String groupName) throws SQLException, OnCreateException {
         workWithUsers.deleteUserFromGroup(telegramUid,groupName);
     }
 
-    public void deleteUserFromGroupWithCheck(long telegramUidMayBeAdmin,long telegramUid, String groupName) throws SQLException, OnCreateException {
+    public boolean deleteUserFromCheck(long telegramUid, String groupName) throws SQLException, OnCreateException {
         long adminID =getGroupAdminID(groupName);
-        if (telegramUidMayBeAdmin==adminID) deleteUserFromGroup(telegramUid,groupName);
-        else throw new OnCreateException("Ошибка доступа");
+        return telegramUid == adminID;
     }
+
     @Override
     public long getGroupAdminID(String groupName) throws SQLException, OnCreateException {
         return workWithUsers.getGroupAdminID(groupName);
@@ -118,12 +119,22 @@ public class DBWorker implements IGetInfo,ITransaction,IWorkWithUsers {
     }
 
     @Override
-    public Map<Long, Long> getTotal(long userID) throws SQLException {
+    public Map<Long, Integer> getTotal(long userID) throws SQLException {
         return getter.getTotal(userID);
     }
 
     @Override
     public List<Long> getGroupInfo(String groupName) throws SQLException, OnCreateException {
         return getter.getGroupInfo(groupName);
+    }
+
+    @Override
+    public List<String> getGroupsNamesForUser(long telegramID) throws SQLException {
+        return getter.getGroupsNamesForUser(telegramID);
+    }
+
+    @Override
+    public Set<UserDB> getUsersInGroups(long telegramID) throws SQLException {
+        return getter.getUsersInGroups(telegramID);
     }
 }

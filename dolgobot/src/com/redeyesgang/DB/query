@@ -40,7 +40,16 @@ getLoginByUID = SELECT login FROM users WHERE telegramID=?
 
 getTransaction = SELECT transactID,fromID,description,amount FROM transact WHERE toID=? and isLegal='0'
 
-deleteFromUiGAll = DELETE From UserInGroups WHERE groupID=? 
+deleteFromUiGAll = DELETE From UserInGroups WHERE groupID=?
 
-deleteFromGroups = DELETE FROM Groups Where groupID=?
+deleteFromGroups = DELETE FROM Groups WHERE groupID=?
+
+getUiG = SELECT groupID FROM UserInGroups WHERE userID=?
+
+getGroupName = SELECT groupName From GROUPS WHERE groupID=?
+
+getUserInfo = SELECT telegramChatID,firstName,secondName,login FROM users WHERE telegramID=?
+
+
+
 

@@ -7,18 +7,18 @@ public class QueryBuilderForGroup {
     }
 
     public static String getSelectFromGroupQuery(String groupName) {
-        return "SELECT member FROM " + groupName;
+        return "SELECT member FROM " + groupName+";";
     }
 
     public static String getDeleteGroupQuery(String groupName) {
-        return "DROP TABLE " + groupName;
+        return "DROP TABLE " + groupName+";";
     }
 
     public static String getInsertToGroupQuery(String groupName) {
-        return "INSERT INTO "+groupName+" (member) VALUES (?)";
+        return "INSERT INTO "+groupName+" (member) VALUES (?);";
     }
 
     public static String getDeleteFromGroupQuery(String groupName) {
-        return "DELETE FROM "+groupName+" WHERE member=?";
+        return "DELETE FROM "+groupName+" WHERE member=?;";
     }
 }
