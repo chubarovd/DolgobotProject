@@ -24,7 +24,7 @@ getGroupID = SELECT groupID FROM groups WHERE groupName=?
 
 createGroup = INSERT INTO groups (groupName,adminID) VALUES (?,?)
 
-getAdmin = SELECT adminID FROM groups WHERE groupName=?
+getAdmin = SELECT adminID,groupID FROM groups WHERE groupName=?
 
 insertUiG = INSERT INTO UserInGroups (userID, groupID) VALUES (?,?)
 
