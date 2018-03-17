@@ -50,6 +50,8 @@ getGroupName = SELECT groupName From GROUPS WHERE groupID=?
 
 getUserInfo = SELECT telegramChatID,firstName,secondName,login FROM users WHERE telegramID=?
 
+getGroupsForUser = SELECT groupName FROM GROUPS g LEFT JOIN UserInGroups u ON g.groupID = u.groupID WHERE u.userID=?
+
 
 
 

@@ -101,10 +101,9 @@ public class WTransaction implements ITransaction {
         rs.close();
         ps = _conn.prepareStatement(QueryBuilderForGroup.getSelectFromGroupQuery(groupName));
         rs = ps.executeQuery();
-        ResultSetMetaData rsmd = rs.getMetaData();
         List<Long> users = new ArrayList<>(20);
         while(rs.next()) {
-            long u= rs.getLong(1);
+            long u = rs.getLong(1);
             if (u!=telegramID)
                 users.add(u);
         }

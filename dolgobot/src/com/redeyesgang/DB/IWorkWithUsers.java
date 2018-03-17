@@ -13,4 +13,5 @@ public interface IWorkWithUsers {
     String getLoginByTelegramID(long telegramID) throws SQLException, OnCreateException;
     void updateChatID(long telegramUID, long telegramChatID) throws SQLException;
     long getTelegramIDbyLogin(String login) throws SQLException, OnCreateException;
+    boolean isUserInGroup(long telegramID,String groupName) throws SQLException;
 }

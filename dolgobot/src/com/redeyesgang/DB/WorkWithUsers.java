@@ -254,4 +254,20 @@ public class WorkWithUsers implements IWorkWithUsers {
         ps.close();
         return res;
     }
+
+    @Override
+    public boolean isUserInGroup(long telegramID,String groupName) throws SQLException {
+        PreparedStatement ps = _con.prepareStatement(QueryBuilderForGroup.getSelectFromGroupQueryToUser(groupName));
+        ps.setLong(1,telegramID);
+        ResultSet rs = ps.executeQuery();
+        if (rs.next()) {
+            rs.close();
+            ps.close();
+            return true;
+        }else{
+            rs.close();
+            ps.close();
+            return false;
+        }
+    }
 }

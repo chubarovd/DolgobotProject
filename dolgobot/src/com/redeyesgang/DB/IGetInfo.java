@@ -10,4 +10,5 @@ public interface IGetInfo {
     List<Long> getGroupInfo(String groupName) throws SQLException, OnCreateException;
     List<String> getGroupsNamesForUser(long telegramID) throws SQLException;
     Set<UserDB> getUsersInGroups(long telegramID) throws SQLException;
+    List<String> getGroupsForUser(long telegramID) throws SQLException;
 }
