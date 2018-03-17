@@ -41,9 +41,17 @@ public class GetInfo implements IGetInfo {
         }
         rs.close();
         ps.close();
+        int groupID=0;
+        ps = _conn.prepareStatement(_props.getProperty("getGroupID"));
+        ps.setString(1,groupName);
+        rs = ps.executeQuery();
+        if (rs.next()) groupID = rs.getInt(1);
+        ps.close();
+        rs.close();
+
 
         List<Long> res = new ArrayList<>();
-        ps = _conn.prepareStatement(QueryBuilderForGroup.getSelectFromGroupQuery(groupName));
+        ps = _conn.prepareStatement(QueryBuilderForGroup.getSelectFromGroupQuery("g"+String.valueOf(groupID)));
         rs = ps.executeQuery();
         while(rs.next()){
             res.add(rs.getLong(1));

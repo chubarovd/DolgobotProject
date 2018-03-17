@@ -40,7 +40,7 @@ public class Dolgobot extends TelegramLongPollingBot {
         try {
             props.load (
                 new FileInputStream (
-                    "C:\\Users\\User\\IdeaProjects\\dolgobot\\src\\com\\redeyesgang\\tg\\props"));
+                    "/home/andrc/IdeaProjects/dolgobot/src/com/redeyesgang/tg/props"));
         } catch (IOException e) {
             e.printStackTrace ();
         }
@@ -121,11 +121,11 @@ public class Dolgobot extends TelegramLongPollingBot {
             String groupName = callbackData.substring (2);
             if (response == '1') {
                 try {
-                    dbObj.addUserToGroup (update.getMessage ().getFrom ().getId (), groupName);
+                    dbObj.addUserToGroup (update.getCallbackQuery().getMessage ().getFrom ().getId (), groupName);
                     editedMessage.setText (update.getCallbackQuery ().getMessage ().getText () + "\nПОДТВЕРЖДЕНО");
                     sendMsg (dbObj.getChatIDbyTgUID (dbObj.getGroupAdminID (groupName)),
                         "Пользователь " +
-                            dbObj.getLoginByTelegramID (update.getMessage ().getFrom ().getId ()) +
+                            dbObj.getLoginByTelegramID (update.getCallbackQuery().getMessage ().getFrom ().getId ()) +
                             " подтвердил Ваше приглашение в группу " + groupName);
                 } catch (SQLException e) {
                     editedMessage.setText ("Ошибка в базе данных. Попробуйте позже.");
@@ -135,11 +135,11 @@ public class Dolgobot extends TelegramLongPollingBot {
                 }
             } else if (response == '0') {
                 try {
-                    dbObj.addUserToGroup (update.getMessage ().getFrom ().getId (), groupName);
+                    dbObj.addUserToGroup (update.getCallbackQuery ().getMessage ().getFrom ().getId (), groupName);
                     editedMessage.setText (update.getCallbackQuery ().getMessage ().getText () + "\nОТКЛОНЕНО");
                     sendMsg (dbObj.getChatIDbyTgUID (dbObj.getGroupAdminID (groupName)),
                         "Пользователь " +
-                            dbObj.getLoginByTelegramID (update.getMessage ().getFrom ().getId ()) +
+                            dbObj.getLoginByTelegramID (update.getCallbackQuery ().getMessage ().getFrom ().getId ()) +
                             " отклонил Ваше приглашение в группу " + groupName);
                 } catch (SQLException e) {
                     editedMessage.setText ("Ошибка в базе данных. Попробуйте позже.");
@@ -234,7 +234,7 @@ public class Dolgobot extends TelegramLongPollingBot {
                     break;
                 case "/total":
                     try {
-                        String response = new String ();
+                        String response = "";
                         Map<UserDB, Integer> total = dbObj.getTotal (tgId);
                         int i = 1;
                         for (UserDB udb : total.keySet ()) {
@@ -244,7 +244,7 @@ public class Dolgobot extends TelegramLongPollingBot {
                                 udb.getSecondName () + " " +
                                 "(" + udb.getLogin () + ") " + total.get (udb) + "\n";
                         }
-                        if (response == "") response = "И Вы и Вам пока ничего не должны";
+                        if (response.equals("")) response = "И Вы и Вам пока ничего не должны";
                         sendMsg (in.getChatId (), response);
                     } catch (SQLException e) {
                         sendMsg (in.getChatId (), "Что-то с ебучей базой данных. Попробуйте позже.");
@@ -262,11 +262,11 @@ public class Dolgobot extends TelegramLongPollingBot {
                 case "/grouplist":
                     try {
                         List<String> groups = dbObj.getGroupsForUser (tgId);
-                        String list = new String ();
+                        String list = "";
                         for (String gr : groups) {
                             list += gr + "\n";
                         }
-                        if (list == "") list = "Вы пока не состоите ни в одной группе.";
+                        if (list.equals ("")) list = "Вы пока не состоите ни в одной группе.";
                         sendMsg (in.getChatId (), list);
                     } catch (SQLException e) {
                         sendMsg (in.getChatId (), "Что-то с ебучей базой данных. Попробуйте позже.");

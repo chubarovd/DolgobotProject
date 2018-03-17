@@ -63,14 +63,6 @@ public class WorkWithUsers implements IWorkWithUsers {
         ps.executeUpdate();
         ps.close();
 
-        Statement stmt = _con.createStatement();
-        stmt.execute(QueryBuilderForGroup.getCreateGroupQuery(groupName));
-        stmt.close();
-        ps = _con.prepareStatement(QueryBuilderForGroup.getInsertToGroupQuery(groupName));
-        ps.setLong(1,telegramUid);
-        ps.executeUpdate();
-        ps.close();
-
         int groupID=0;
         ps = _con.prepareStatement(_props.getProperty("getGroupID"));
         ps.setString(1,groupName);
@@ -78,6 +70,15 @@ public class WorkWithUsers implements IWorkWithUsers {
         if (rs.next()) groupID = rs.getInt(1);
         ps.close();
         rs.close();
+
+        Statement stmt = _con.createStatement();
+        stmt.execute(QueryBuilderForGroup.getCreateGroupQuery("g"+String.valueOf(groupID)));
+        stmt.close();
+        ps = _con.prepareStatement(QueryBuilderForGroup.getInsertToGroupQuery("g"+String.valueOf(groupID)));
+        ps.setLong(1,telegramUid);
+        ps.executeUpdate();
+        ps.close();
+
 
         ps = _con.prepareStatement(_props.getProperty("insertUiG"));
         ps.setLong(1,telegramUid);
@@ -106,7 +107,7 @@ public class WorkWithUsers implements IWorkWithUsers {
         ps.close();
         if (adminID != telegramUid) throw new OnCreateException("Ошибка доступа!");
         Statement stmt = _con.createStatement();
-        stmt.execute(QueryBuilderForGroup.getDeleteGroupQuery(groupName));
+        stmt.execute(QueryBuilderForGroup.getDeleteGroupQuery("g"+String.valueOf(groupID)));
         stmt.close();
         ps = _con.prepareStatement(_props.getProperty("deleteFromUiGAll"));
         ps.setInt(1,groupID);
@@ -134,7 +135,7 @@ public class WorkWithUsers implements IWorkWithUsers {
         rs.close();
         ps.close();
         try {
-            ps = _con.prepareStatement(QueryBuilderForGroup.getInsertToGroupQuery(groupName));
+            ps = _con.prepareStatement(QueryBuilderForGroup.getInsertToGroupQuery("g"+String.valueOf(groupID)));
             ps.setLong(1,telegramUid);
             ps.executeUpdate();
             ps.close();
@@ -165,7 +166,7 @@ public class WorkWithUsers implements IWorkWithUsers {
         rs.close();
         ps.close();
 
-        ps = _con.prepareStatement(QueryBuilderForGroup.getDeleteFromGroupQuery(groupName));
+        ps = _con.prepareStatement(QueryBuilderForGroup.getDeleteFromGroupQuery("g"+String.valueOf(groupID)));
         ps.setLong(1,telegramUid);
         ps.executeUpdate();
         ps.close();
@@ -257,9 +258,18 @@ public class WorkWithUsers implements IWorkWithUsers {
 
     @Override
     public boolean isUserInGroup(long telegramID,String groupName) throws SQLException {
-        PreparedStatement ps = _con.prepareStatement(QueryBuilderForGroup.getSelectFromGroupQueryToUser(groupName));
+        int groupID=-1;
+        PreparedStatement ps = _con.prepareStatement(_props.getProperty("getGroupID"));
+        ps.setString(1,groupName);
+        ResultSet rs  = ps.executeQuery();
+        if(rs.next()) {
+            groupID = rs.getInt(1);
+        }
+        rs.close();
+        ps.close();
+        ps = _con.prepareStatement(QueryBuilderForGroup.getSelectFromGroupQueryToUser("g"+String.valueOf(groupID)));
         ps.setLong(1,telegramID);
-        ResultSet rs = ps.executeQuery();
+        rs = ps.executeQuery();
         if (rs.next()) {
             rs.close();
             ps.close();
