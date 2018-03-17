@@ -92,8 +92,10 @@ public class WorkWithUsers implements IWorkWithUsers {
         ps.setString(1,groupName);
         ResultSet rs = ps.executeQuery();
         long adminID;
+        int groupID;
         if (rs.next()) {
                adminID = rs.getLong(1);
+               groupID =rs.getInt(2);
         }
         else {
             rs.close();
@@ -106,20 +108,6 @@ public class WorkWithUsers implements IWorkWithUsers {
         Statement stmt = _con.createStatement();
         stmt.execute(QueryBuilderForGroup.getDeleteGroupQuery(groupName));
         stmt.close();
-        ps = _con.prepareStatement(_props.getProperty("getGroupID"));
-        ps.setString(1,groupName);
-        rs = ps.executeQuery();
-        int groupID;
-        if (rs.next()) {
-            groupID = rs.getInt(1);
-        }else {
-            rs.close();
-            ps.close();
-            throw new OnCreateException("Группы с таким именем не сущесвует!");
-        }
-        rs.close();
-        ps.close();
-
         ps = _con.prepareStatement(_props.getProperty("deleteFromUiGAll"));
         ps.setInt(1,groupID);
         ps.executeUpdate();

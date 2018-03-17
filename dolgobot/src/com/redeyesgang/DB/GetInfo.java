@@ -74,7 +74,7 @@ public class GetInfo implements IGetInfo {
         }
         return result;
     }
-    
+
     private String getGroupNameByID (int groupID) throws SQLException {
         PreparedStatement ps = _conn.prepareStatement(_props.getProperty("getGroupName"));
         ps.setInt(1,groupID);
