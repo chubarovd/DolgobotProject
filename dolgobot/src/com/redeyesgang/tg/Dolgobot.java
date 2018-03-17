@@ -266,6 +266,7 @@ public class Dolgobot extends TelegramLongPollingBot {
                         for (String gr : groups) {
                             list += gr + "\n";
                         }
+                        if (list == "") list = "Вы пока не состоите ни в одной группе.";
                         sendMsg (in.getChatId (), list);
                     } catch (SQLException e) {
                         sendMsg (in.getChatId (), "Что-то с ебучей базой данных. Попробуйте позже.");
