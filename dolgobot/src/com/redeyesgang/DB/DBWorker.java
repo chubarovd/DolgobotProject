@@ -138,4 +138,9 @@ public class DBWorker implements IGetInfo,ITransaction,IWorkWithUsers {
     public Set<UserDB> getUsersInGroups(long telegramID) throws SQLException {
         return getter.getUsersInGroups(telegramID);
     }
+
+    @Override
+    public List<String> getGroupsForUser(long telegramID) throws SQLException {
+        return getter.getGroupsForUser(telegramID);
+    }
 }

@@ -75,6 +75,21 @@ public class GetInfo implements IGetInfo {
         return result;
     }
 
+    @Override
+    public List<String> getGroupsForUser(long telegramID) throws SQLException {
+        PreparedStatement ps = _conn.prepareStatement(_props.getProperty("getGroupsForUser"));
+        List<String> groupNames = new ArrayList<>();
+        ps.setLong(1,telegramID);
+        ResultSet rs = ps.executeQuery();
+        while (rs.next()) {
+            groupNames.add(rs.getString(1));
+        }
+        rs.close();
+        ps.close();
+        return groupNames;
+
+    }
+
     private String getGroupNameByID (int groupID) throws SQLException {
         PreparedStatement ps = _conn.prepareStatement(_props.getProperty("getGroupName"));
         ps.setInt(1,groupID);
