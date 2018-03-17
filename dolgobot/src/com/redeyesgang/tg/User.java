@@ -15,10 +15,13 @@ public class User {
         SENDS_DEST_USER,
         SENDS_AMOUNT,
         SENDS_DESCRIPTION,
-        SENDS_GROUP_NAME,
+        SENDS_GROUP_NAME_CREATION,
+        SENDS_GROUP_NAME_DELETE,
+        SENDS_GROUP_NAME_USERS_ADDITION,
+        SENDS_GROUP_NAME_USERS_LIST,
         SENDS_GROUP_MEMBERS,
         SENDS_GROUP_NAME_TR,
-        SENDS_AMOUNT_GR_TR
+        SENDS_AMOUNT_GROUP_TR
     }
 
     private State state;

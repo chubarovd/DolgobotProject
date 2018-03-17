@@ -73,8 +73,4 @@ public class Transaction extends Object {
     public void setTransactID(long transactID) {
         this.transactID = transactID;
     }
-
-    public String toString () {
-        return "from: " /*+ getDolgobotLogin (fromId) + " to: " + getDolgobotLogin (toId)*/;
-    }
 }
