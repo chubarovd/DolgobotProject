@@ -70,12 +70,12 @@ public class Dolgobot extends TelegramLongPollingBot {
         String callbackData = update.getCallbackQuery ().getData ();
         int messageId = update.getCallbackQuery ().getMessage ().getMessageId ();
         long chatId = update.getCallbackQuery ().getMessage ().getChatId ();
-        char response = callbackData.toCharArray ()[0];
-        char key = callbackData.toCharArray ()[1];
+        char response = callbackData.toCharArray ()[1];
+        char key = callbackData.toCharArray ()[0];
 
         EditMessageText editedMessage =
             new EditMessageText ().setMessageId (messageId).setChatId (chatId);
-        if (key == 0) {
+        if (key == '0') {
             long transactionId = Long.valueOf (callbackData.substring (2));
             if (response == '1') {
                 try {
@@ -121,11 +121,11 @@ public class Dolgobot extends TelegramLongPollingBot {
             String groupName = callbackData.substring (2);
             if (response == '1') {
                 try {
-                    dbObj.addUserToGroup (update.getCallbackQuery().getMessage ().getFrom ().getId (), groupName);
+                    dbObj.addUserToGroup (update.getCallbackQuery().getFrom ().getId (), groupName);
                     editedMessage.setText (update.getCallbackQuery ().getMessage ().getText () + "\nПОДТВЕРЖДЕНО");
                     sendMsg (dbObj.getChatIDbyTgUID (dbObj.getGroupAdminID (groupName)),
                         "Пользователь " +
-                            dbObj.getLoginByTelegramID (update.getCallbackQuery().getMessage ().getFrom ().getId ()) +
+                            dbObj.getLoginByTelegramID (update.getCallbackQuery().getFrom ().getId ()) +
                             " подтвердил Ваше приглашение в группу " + groupName);
                 } catch (SQLException e) {
                     editedMessage.setText ("Ошибка в базе данных. Попробуйте позже.");
@@ -135,11 +135,10 @@ public class Dolgobot extends TelegramLongPollingBot {
                 }
             } else if (response == '0') {
                 try {
-                    dbObj.addUserToGroup (update.getCallbackQuery ().getMessage ().getFrom ().getId (), groupName);
                     editedMessage.setText (update.getCallbackQuery ().getMessage ().getText () + "\nОТКЛОНЕНО");
                     sendMsg (dbObj.getChatIDbyTgUID (dbObj.getGroupAdminID (groupName)),
                         "Пользователь " +
-                            dbObj.getLoginByTelegramID (update.getCallbackQuery ().getMessage ().getFrom ().getId ()) +
+                            dbObj.getLoginByTelegramID (update.getCallbackQuery ().getFrom ().getId ()) +
                             " отклонил Ваше приглашение в группу " + groupName);
                 } catch (SQLException e) {
                     editedMessage.setText ("Ошибка в базе данных. Попробуйте позже.");
@@ -306,12 +305,8 @@ public class Dolgobot extends TelegramLongPollingBot {
                         sendMsg (in.getChatId (), "Удаление группы отменено.");
                         break;
                     case SENDS_GROUP_MEMBERS:
-                        sendMsg (in.getChatId (), "Создание группы отменено.");
-                        try {
-                            dbObj.deleteGroup (tgId, temp.getGroupName ());
-                        } catch (Exception e) {
-                            e.printStackTrace ();
-                        }
+                        sendMsg (in.getChatId (), "Готово!\n" +
+                                "Если Вы передумали создавать группу, Вы можете удалить ее, отправив /deletegroup");
                         break;
                     case SENDS_GROUP_NAME_TR:
                         sendMsg (in.getChatId (), "Создание групповой транзакции отменено.");
@@ -323,8 +318,7 @@ public class Dolgobot extends TelegramLongPollingBot {
                         sendMsg (in.getChatId (), "Создание групповой транзакции отменено.");
                         break;
                     case SENDS_GROUP_NAME_USERS_ADDITION:
-                        sendMsg (in.getChatId (), "Готово!\n" +
-                            "Если Вы передумали создавать группу, Вы можете удалить ее, отправив /deletegroup");
+                        sendMsg (in.getChatId (), "Создание группы отменено.");
                         break;
                 }
                 users.remove (tgId);
@@ -426,7 +420,7 @@ public class Dolgobot extends TelegramLongPollingBot {
                     break;
                 case SENDS_GROUP_NAME_DELETE:
                     try {
-                        if (dbObj.isAdminCheck (tgId, in_text)) {
+                        if (!dbObj.isAdminCheck (tgId, in_text)) {
                             sendMsg (in.getChatId (),
                                 "Вы не являетесь администратором этой группы, поэтому не можете ее удалить.\n" +
                                     "Введите название группы, которую хотите удалить.\n" +
@@ -500,24 +494,25 @@ public class Dolgobot extends TelegramLongPollingBot {
                     }
                     break;
                 case SENDS_GROUP_NAME_TR:
-                    try {
-                        if (dbObj.isAdminCheck (tgId, in_text)) {
+                    //try {
+                        //if (dbObj.isAdminCheck (tgId, in_text)) {
                             temp.setGroupName (in_text);
+                            temp.setState(User.State.SENDS_AMOUNT_GROUP_TR);
                             sendMsg (in.getChatId (), "Введите сумму.");
-                        } else {
+                        /*} else {
                             sendMsg (in.getChatId (),
                                 "Вы не являетесь администратором этой группы, " +
                                     "поэтому не можете добавить транзакцию на нее.\n" +
                                     "Проверьте введенное Вами название и попробуйте еще раз.\n" +
                                     "Отменить транзакцию /break");
-                        }
-                    } catch (SQLException e) {
+                        }*/
+                    /*} catch (SQLException e) {
                         sendMsg (in.getChatId (), "Ошибка в базе данных. Побробуйте позже.");
                         e.printStackTrace ();
                     } catch (OnCreateException e) {
                         sendMsg (in.getChatId (), "Группы с таким названием не существует. Попробуйте еще раз.");
                         e.printStackTrace ();
-                    }
+                    }*/
                     break;
                 case SENDS_AMOUNT_GROUP_TR:
                     try {
@@ -593,7 +588,7 @@ public class Dolgobot extends TelegramLongPollingBot {
         row.add(
             new InlineKeyboardButton()
                 .setText("Принять")
-                .setCallbackData("10" + transactionId));
+                .setCallbackData("01" + transactionId));
         row.add(
             new InlineKeyboardButton()
                 .setText("Отклонить")
@@ -614,7 +609,7 @@ public class Dolgobot extends TelegramLongPollingBot {
         row.add(
             new InlineKeyboardButton()
                 .setText("Отклонить")
-                .setCallbackData("01" + groupName));
+                .setCallbackData("10" + groupName));
         rows.add(row);
         keyboard.setKeyboard(rows);
 

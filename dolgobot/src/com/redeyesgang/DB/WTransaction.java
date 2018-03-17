@@ -99,7 +99,17 @@ public class WTransaction implements ITransaction {
         }
         ps.close();
         rs.close();
-        ps = _conn.prepareStatement(QueryBuilderForGroup.getSelectFromGroupQuery(groupName));
+        int groupID=-1;
+        ps = _conn.prepareStatement(_props.getProperty("getGroupID"));
+        ps.setString(1,groupName);
+        rs  = ps.executeQuery();
+        if(rs.next()) {
+            groupID = rs.getInt(1);
+        }
+        rs.close();
+        ps.close();
+
+        ps = _conn.prepareStatement(QueryBuilderForGroup.getSelectFromGroupQuery("g"+String.valueOf(groupID)));
         rs = ps.executeQuery();
         List<Long> users = new ArrayList<>(20);
         while(rs.next()) {

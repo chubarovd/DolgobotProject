@@ -22,7 +22,7 @@ public class GetInfo implements IGetInfo {
         ps.setLong(1,userID);
         ResultSet rs =  ps.executeQuery();
         while(rs.next()) {
-            result.put(getUserInfo(userID), rs.getInt(2));
+            result.put(getUserInfo(rs.getLong(1)), rs.getInt(2));
         }
         rs.close();
         ps.close();
@@ -128,7 +128,7 @@ public class GetInfo implements IGetInfo {
 
     private List<Long> getUsersInGroup(int groupID) throws SQLException {
         PreparedStatement ps = _conn.prepareStatement(
-                QueryBuilderForGroup.getSelectFromGroupQuery(getGroupNameByID(groupID)));
+                QueryBuilderForGroup.getSelectFromGroupQuery("g"+String.valueOf(groupID)));
         ResultSet rs = ps.executeQuery();
         List<Long> result = new ArrayList<>();
         while(rs.next()) {
