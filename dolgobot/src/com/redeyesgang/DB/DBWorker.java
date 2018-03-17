@@ -78,17 +78,13 @@ public class DBWorker implements IGetInfo,ITransaction,IWorkWithUsers {
         workWithUsers.addUserToGroup(telegramUid,groupName);
     }
 
-    public boolean addUserToGroupCheck(long telegramUid, String groupName) throws SQLException, OnCreateException {
-        long adminID =getGroupAdminID(groupName);
-        return adminID == telegramUid;
-    }
 
     @Override
     public void deleteUserFromGroup(long telegramUid, String groupName) throws SQLException, OnCreateException {
         workWithUsers.deleteUserFromGroup(telegramUid,groupName);
     }
 
-    public boolean deleteUserFromCheck(long telegramUid, String groupName) throws SQLException, OnCreateException {
+    public boolean isAdminCheck(long telegramUid, String groupName) throws SQLException, OnCreateException {
         long adminID =getGroupAdminID(groupName);
         return telegramUid == adminID;
     }
@@ -119,7 +115,7 @@ public class DBWorker implements IGetInfo,ITransaction,IWorkWithUsers {
     }
 
     @Override
-    public Map<Long, Integer> getTotal(long userID) throws SQLException {
+    public Map<UserDB, Integer> getTotal(long userID) throws SQLException {
         return getter.getTotal(userID);
     }
 

@@ -6,7 +6,7 @@ import java.util.Map;
 import java.util.Set;
 
 public interface IGetInfo {
-    Map<Long,Integer> getTotal(long userID) throws SQLException;
+    Map<UserDB,Integer> getTotal(long userID) throws SQLException;
     List<Long> getGroupInfo(String groupName) throws SQLException, OnCreateException;
     List<String> getGroupsNamesForUser(long telegramID) throws SQLException;
     Set<UserDB> getUsersInGroups(long telegramID) throws SQLException;

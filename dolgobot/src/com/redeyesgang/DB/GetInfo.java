@@ -16,13 +16,13 @@ public class GetInfo implements IGetInfo {
     }
 
     @Override
-    public Map<Long,Integer> getTotal(long userID) throws SQLException {
-        Map<Long,Integer> result = new HashMap<>();
+    public Map<UserDB,Integer> getTotal(long userID) throws SQLException {
+        Map<UserDB,Integer> result = new HashMap<>();
         PreparedStatement ps = _conn.prepareStatement(_props.getProperty("getTotalByID"));
         ps.setLong(1,userID);
         ResultSet rs =  ps.executeQuery();
         while(rs.next()) {
-            result.put(rs.getLong(1),rs.getInt(2));
+            result.put(getUserInfo(userID), rs.getInt(2));
         }
         rs.close();
         ps.close();
@@ -74,6 +74,7 @@ public class GetInfo implements IGetInfo {
         }
         return result;
     }
+    
     private String getGroupNameByID (int groupID) throws SQLException {
         PreparedStatement ps = _conn.prepareStatement(_props.getProperty("getGroupName"));
         ps.setInt(1,groupID);
