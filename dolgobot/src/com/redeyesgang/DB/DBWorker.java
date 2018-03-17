@@ -115,6 +115,11 @@ public class DBWorker implements IGetInfo,ITransaction,IWorkWithUsers {
     }
 
     @Override
+    public boolean isUserInGroup(long telegramID, String groupName) throws SQLException {
+        return workWithUsers.isUserInGroup(telegramID,groupName);
+    }
+
+    @Override
     public Map<UserDB, Integer> getTotal(long userID) throws SQLException {
         return getter.getTotal(userID);
     }

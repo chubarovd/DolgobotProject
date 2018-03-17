@@ -10,6 +10,10 @@ public class QueryBuilderForGroup {
         return "SELECT member FROM " + groupName+";";
     }
 
+    public static String getSelectFromGroupQueryToUser(String groupName) {
+        return "SELECT member FROM " + groupName+" WHERE member=?"+";";
+    }
+
     public static String getDeleteGroupQuery(String groupName) {
         return "DROP TABLE " + groupName+";";
     }
