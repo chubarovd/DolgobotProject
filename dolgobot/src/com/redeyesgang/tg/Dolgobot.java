@@ -244,6 +244,7 @@ public class Dolgobot extends TelegramLongPollingBot {
                                 udb.getSecondName () + " " +
                                 "(" + udb.getLogin () + ") " + total.get (udb) + "\n";
                         }
+                        if (response == "") response = "И Вы и Вам пока ничего не должны";
                         sendMsg (in.getChatId (), response);
                     } catch (SQLException e) {
                         sendMsg (in.getChatId (), "Что-то с ебучей базой данных. Попробуйте позже.");
